@@ -2,6 +2,7 @@ package edu.whimc.ObservationAssesser.utils.sql;
 
 import edu.whimc.ObservationAssesser.ObservationAssesser;
 
+import edu.whimc.ObservationAssesser.assessments.OverallAssessment;
 import edu.whimc.ObservationAssesser.bkt.Skills;
 import edu.whimc.ObservationAssesser.utils.Utils;
 import org.bukkit.Bukkit;
@@ -10,18 +11,20 @@ import org.bukkit.World;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Consumer;
 
 /**
  * Handles storing position data
  *
- * @author Jack Henhapl
+ * @author Sam
  */
 public class Queryer {
-
 
     //Query for inserting skills into the database.
     private static final String QUERY_SAVE_SKILLS =
@@ -41,6 +44,28 @@ public class Queryer {
             "WHERE uuid=?;";
 
 
+    //Query for getting science tool use during session from the database.
+    private static final String QUERY_GET_SESSION_TOOLS =
+            "SELECT * FROM whimc_sciencetools "+
+                    "WHERE uuid=? AND time > ?;";
+
+    //Query for getting observation use during session from the database.
+    private static final String QUERY_GET_SESSION_OBSERVATIONS =
+            "SELECT * FROM whimc_observations "+
+                    "WHERE uuid=? AND time > ?;";
+
+    //Query for getting player positions during session from the database.
+    private static final String QUERY_GET_SESSION_POSITIONS =
+            "SELECT * FROM whimc_player_positions "+
+                    "WHERE uuid=? AND time > ?;";
+
+    /**
+     * Query for inserting a progress entry into the database.
+     */
+    private static final String QUERY_SAVE_PROGRESS =
+            "INSERT INTO whimc_progress " +
+                    "(uuid, username, time, observation, science_tools, exploration, quest, score) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
     private final ObservationAssesser plugin;
     private final MySQLConnection sqlConnection;
@@ -161,6 +186,147 @@ public class Queryer {
                 }
             } catch (SQLException exc) {
                 exc.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Method to get skills for a player
+     * @param player Player to get the skills for
+     * @param callback callback to signify process completion
+     */
+    public void getSessionScienceTools(Player player, Long sessionStart, Consumer callback){
+        HashMap<String,HashSet<String>> tools = new HashMap<>();
+        async(() -> {
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_TOOLS)) {
+                    statement.setString(1, player.getUniqueId().toString());
+                    statement.setInt(2, sessionStart.intValue());
+                    ResultSet results = statement.executeQuery();
+                    while (results.next()) {
+                        String worldName = results.getString("world");
+                        String sciTool = results.getString("tool");
+                        if(!tools.containsKey(worldName)){
+                            tools.put(worldName,new HashSet<String>());
+                        }
+                        tools.get(worldName).add(sciTool);
+                    }
+                    sync(callback,tools);
+                }
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+            }
+        });
+    }
+    /**
+     * Method to get skills for a player
+     * @param player Player to get the skills for
+     * @param callback callback to signify process completion
+     */
+    public void getSessionObservations(Player player, Long sessionStart, Consumer callback){
+        HashMap<String,ArrayList<String>> observations = new HashMap<>();
+        async(() -> {
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_OBSERVATIONS)) {
+                    statement.setString(1, player.getUniqueId().toString());
+                    statement.setInt(2, sessionStart.intValue());
+                    ResultSet results = statement.executeQuery();
+                    while (results.next()) {
+                        String worldName = results.getString("world");
+                        String category = results.getString("category");
+                        if(!observations.containsKey(worldName)){
+                            observations.put(worldName,new ArrayList<String>());
+                        }
+                        observations.get(worldName).add(category);
+                    }
+                    sync(callback,observations);
+                }
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Method to get skills for a player
+     * @param player Player to get the skills for
+     * @param callback callback to signify process completion
+     */
+    public void getSessionPositions(Player player, Long sessionStart, Consumer callback){
+        HashMap<String, ArrayList<Point>> positions = new HashMap<>();
+        async(() -> {
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_POSITIONS)) {
+                    statement.setString(1, player.getUniqueId().toString());
+                    statement.setInt(2, sessionStart.intValue());
+                    ResultSet results = statement.executeQuery();
+                    while (results.next()) {
+                        String worldName = results.getString("world");
+                        int x = results.getInt("x");
+                        int z = results.getInt("z");
+                        Point point = new Point(x,z);
+                        if(!positions.containsKey(worldName)){
+                            positions.put(worldName,new ArrayList<Point>());
+                        }
+                        positions.get(worldName).add(point);
+                    }
+                    sync(callback,positions);
+                }
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Generated a PreparedStatement for saving a new progress session.
+     *
+     * @param connection MySQL Connection
+     * @param assessment       Assessment to save
+     * @return PreparedStatement
+     * @throws SQLException
+     */
+    private PreparedStatement getStatement(Connection connection, OverallAssessment assessment) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_PROGRESS, Statement.RETURN_GENERATED_KEYS);
+
+
+        statement.setString(1, assessment.getPlayer().getUniqueId().toString());
+        statement.setString(2, assessment.getPlayer().getName());
+        statement.setLong(3, assessment.getSessionStart());
+        statement.setDouble(4, assessment.getObservationAssessment().metric());
+        statement.setDouble(5, assessment.getScienceToolAssessment().metric());
+        statement.setDouble(6, assessment.getExplorationAssessment().metric());
+        statement.setDouble(7, assessment.getQuestAssessment().metric());
+        statement.setDouble(8, assessment.metric());
+        return statement;
+    }
+
+    /**
+     * Stores an observation into the database and returns the obervation's ID
+     *
+     * @param assessment Assessment to save
+     * @param callback    Function to call once the observation has been saved
+     */
+    public void storeNewProgress(OverallAssessment assessment, Consumer<Integer> callback) {
+        async(() -> {
+            Utils.debug("Storing observation to database:");
+
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = getStatement(connection, assessment)) {
+                    String query = statement.toString().substring(statement.toString().indexOf(" ") + 1);
+                    Utils.debug("  " + query);
+                    statement.executeUpdate();
+
+                    try (ResultSet idRes = statement.getGeneratedKeys()) {
+                        idRes.next();
+                        int id = idRes.getInt(1);
+
+                        Utils.debug("Observation saved with id " + id + ".");
+                        sync(callback, id);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         });
     }

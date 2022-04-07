@@ -1,8 +1,9 @@
 package edu.whimc.ObservationAssesser.commands;
 
 import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.assessments.StructureAssessment;
+import edu.whimc.ObservationAssesser.assessments.*;
 import edu.whimc.ObservationAssesser.utils.Utils;
+import edu.whimc.ObservationAssesser.utils.sql.Queryer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,14 +12,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
+import edu.whimc.ObservationAssesser.utils.Utils;
 /**
  * Class to define assessment command
  */
-public class AssessmentCommand implements CommandExecutor, TabCompleter {
+public class ProgressCommand implements CommandExecutor, TabCompleter {
 
     private final ObservationAssesser plugin;
 
@@ -26,7 +26,7 @@ public class AssessmentCommand implements CommandExecutor, TabCompleter {
      * Constructor to set instance variable
      * @param plugin the ObservationAssesser plugin instance
      */
-    public AssessmentCommand(ObservationAssesser plugin) {
+    public ProgressCommand(ObservationAssesser plugin) {
         this.plugin = plugin;
     }
 
@@ -41,17 +41,23 @@ public class AssessmentCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         Player player = (Player) commandSender;
-        //Need to preprocess lowercase and remove non alpha characters
-        String observation = String.join(" ", Arrays.copyOfRange(args,0,args.length-1));
-        observation.replaceAll("[^A-Za-z0-9]", "");
-        String observationType = args[args.length-1];
 
-        StructureAssessment assessment = new StructureAssessment(observation, observationType);
-
-        assessment.predict();
-        plugin.getQueryer().updateSkills(player, observationType, assessment.getCorrect(), currentSkills -> {
-            Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
-            player.sendMessage(assessment.getFeedback());
+        HashMap<Player,Long> sessions = plugin.getPlayerSessions();
+        Long sessionStart = sessions.get(player);
+        if(sessionStart == null){
+            return false;
+        }
+        plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
+            ObservationAssessment obs = new ObservationAssessment(player, sessionStart,observations);
+            plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
+                ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
+                plugin.getQueryer().getSessionPositions(player,sessionStart, positions -> {
+                    ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
+                    QuestAssessment quest = new QuestAssessment(player, sessionStart, null);
+                    OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                    Utils.sendProgressFeedback(assessment);
+                });
+            });
         });
         return true;
     }

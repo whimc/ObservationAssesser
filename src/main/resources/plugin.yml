@@ -8,3 +8,9 @@ commands:
   observationassesser:
     description: Assesses quality and structure of observation
     usage: '/observationassesser [observation] [observation type]'
+  progress:
+    description: Gives feedback on student progress during session
+    usage: '/progress'
+  leaderboard:
+    description: Displays order of current players on server
+    usage: '/leaderboard'

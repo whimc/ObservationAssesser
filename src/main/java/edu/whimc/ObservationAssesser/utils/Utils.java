@@ -3,20 +3,19 @@ package edu.whimc.ObservationAssesser.utils;
 import com.google.common.base.Strings;
 import edu.whimc.ObservationAssesser.ObservationAssesser;
 
+import edu.whimc.ObservationAssesser.assessments.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.Array;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -194,6 +193,25 @@ public class Utils {
         player.sendMessage("§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]");
         player.sendMessage("§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]");
         player.sendMessage("§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]");
+    }
+
+
+    public static void sendProgressFeedback(OverallAssessment assessment){
+        Player player = assessment.getPlayer();
+        player.sendMessage("Here is your progress for this session\n"+
+                assessment.getObservationAssessment().getName()+": "+assessment.getObservationAssessment().metric()+"\n"+
+                assessment.getScienceToolAssessment().getName()+": "+assessment.getScienceToolAssessment().metric()+"\n"+
+                assessment.getExplorationAssessment().getName()+": "+assessment.getExplorationAssessment().metric()+"\n"+
+                assessment.getQuestAssessment().getName()+": "+assessment.getQuestAssessment().metric()+"\n"+
+                assessment.getName()+": "+assessment.metric());
+    }
+
+    public static void sendLeaderboardFeedback(Player sender, ArrayList<OverallAssessment> scores){
+        sender.sendMessage("LEADERBOARD");
+        for(int k = 0; k < scores.size(); k++){
+            int position = k+1;
+            sender.sendMessage(position+")\t"+ scores.get(k).getPlayer().getName()+": "+scores.get(k).metric());
+        }
     }
 
 }
