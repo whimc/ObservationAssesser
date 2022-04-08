@@ -1,9 +1,6 @@
-package edu.whimc.ObservationAssesser.assessments;
+package edu.whimc.feedback.assessments;
 
-import edu.whimc.ObservationAssesser.bkt.Skills;
 import org.pmml4s.model.Model;
-
-import java.util.*;
 
 /**
  * Class to assess observation structure with an ML pipeline

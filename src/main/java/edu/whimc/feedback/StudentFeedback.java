@@ -1,11 +1,11 @@
-package edu.whimc.ObservationAssesser;
+package edu.whimc.feedback;
 
-import edu.whimc.ObservationAssesser.assessments.*;
-import edu.whimc.ObservationAssesser.commands.AssessmentCommand;
-import edu.whimc.ObservationAssesser.commands.LeaderboardCommand;
-import edu.whimc.ObservationAssesser.commands.ProgressCommand;
-import edu.whimc.ObservationAssesser.utils.Utils;
-import edu.whimc.ObservationAssesser.utils.sql.Queryer;
+import edu.whimc.feedback.assessments.*;
+import edu.whimc.feedback.commands.AssessmentCommand;
+import edu.whimc.feedback.commands.LeaderboardCommand;
+import edu.whimc.feedback.commands.ProgressCommand;
+import edu.whimc.feedback.utils.Utils;
+import edu.whimc.feedback.utils.sql.Queryer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 
 
@@ -24,15 +23,16 @@ import java.util.HashMap;
  * Class to create plugin and enable it in MC
  * @author sam
  */
-public class ObservationAssesser extends JavaPlugin implements Listener {
-    private static ObservationAssesser instance;
+public class StudentFeedback extends JavaPlugin implements Listener {
+    private static StudentFeedback instance;
     private Queryer queryer;
     private HashMap<Player,Long> sessions;
+
     /**
      * Method to return instance of plugin
-     * @return instance of ObservationAssesser plugin
+     * @return instance of StudentFeedback plugin
      */
-    public static ObservationAssesser getInstance() {
+    public static StudentFeedback getInstance() {
         return instance;
     }
 
@@ -45,7 +45,7 @@ public class ObservationAssesser extends JavaPlugin implements Listener {
         sessions = new HashMap<>();
         System.currentTimeMillis();
 
-        ObservationAssesser.instance = this;
+        StudentFeedback.instance = this;
         this.queryer = new Queryer(this, q -> {
             // If we couldn't connect to the database disable the plugin
             if (q == null) {
@@ -66,17 +66,33 @@ public class ObservationAssesser extends JavaPlugin implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
     }
 
+    /**
+     * Returns queryer
+     * @return queryer
+     */
     public Queryer getQueryer() {
         return this.queryer;
     }
 
+    /**
+     * Returns current sessions on server
+     * @return sessions on server
+     */
     public HashMap getPlayerSessions(){return this.sessions;}
 
+    /**
+     * When players join they are added to sessions
+     * @param event PlayerJoinEvent
+     */
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event){
         sessions.putIfAbsent(event.getPlayer(), System.currentTimeMillis());
     }
 
+    /**
+     * When players leave their progress is saved to db and they are removed from sessions
+     * @param event PlayerQuitEvent
+     */
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
@@ -98,6 +114,14 @@ public class ObservationAssesser extends JavaPlugin implements Listener {
 
     }
 
+    /**
+     * Display when plugin cannot be enabled
+     * @param sender
+     * @param command
+     * @param label
+     * @param args
+     * @return
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Utils.msg(sender, "&cThis plugin is disabled because it was unable to connect to the configured database. " +

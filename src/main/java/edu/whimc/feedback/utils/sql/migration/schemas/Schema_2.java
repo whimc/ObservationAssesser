@@ -1,6 +1,6 @@
-package edu.whimc.ObservationAssesser.utils.sql.migration.schemas;
+package edu.whimc.feedback.utils.sql.migration.schemas;
 
-import edu.whimc.ObservationAssesser.utils.sql.migration.SchemaVersion;
+import edu.whimc.feedback.utils.sql.migration.SchemaVersion;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

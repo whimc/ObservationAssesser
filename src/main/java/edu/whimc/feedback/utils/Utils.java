@@ -1,15 +1,14 @@
-package edu.whimc.ObservationAssesser.utils;
+package edu.whimc.feedback.utils;
 
 import com.google.common.base.Strings;
-import edu.whimc.ObservationAssesser.ObservationAssesser;
 
-import edu.whimc.ObservationAssesser.assessments.*;
+import edu.whimc.feedback.assessments.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.Array;
+
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,7 +16,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Class to define utility methods
@@ -195,22 +193,52 @@ public class Utils {
         player.sendMessage("§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]");
     }
 
-
+    /**
+     * Method to display progress
+     * @param assessment the assessment for the player to display
+     */
     public static void sendProgressFeedback(OverallAssessment assessment){
         Player player = assessment.getPlayer();
-        player.sendMessage("Here is your progress for this session\n"+
-                assessment.getObservationAssessment().getName()+": "+assessment.getObservationAssessment().metric()+"\n"+
-                assessment.getScienceToolAssessment().getName()+": "+assessment.getScienceToolAssessment().metric()+"\n"+
-                assessment.getExplorationAssessment().getName()+": "+assessment.getExplorationAssessment().metric()+"\n"+
-                assessment.getQuestAssessment().getName()+": "+assessment.getQuestAssessment().metric()+"\n"+
-                assessment.getName()+": "+assessment.metric());
+        HashMap<String, Double> metrics = new HashMap<String, Double>();
+        ObservationAssessment obs = assessment.getObservationAssessment();
+        ScienceToolsAssessment sci = assessment.getScienceToolAssessment();
+        ExplorationAssessment exp = assessment.getExplorationAssessment();
+        QuestAssessment quest = assessment.getQuestAssessment();
+
+        metrics.put(obs.getName(), obs.metric());
+        metrics.put(sci.getName(), sci.metric());
+        metrics.put(exp.getName(), exp.metric());
+        metrics.put(quest.getName(), quest.metric());
+
+
+        String minMetric = "";
+        double min = Double.MAX_VALUE;
+        for(Map.Entry<String, Double> entry : metrics.entrySet()) {
+            String key = entry.getKey();
+            Double value = entry.getValue();
+            if(value < min){
+                minMetric = key;
+                min = value;
+            }
+        }
+        player.sendMessage("Here is your progress for this session");
+        for(Map.Entry<String, Double> entry : metrics.entrySet()) {
+            player.sendMessage(entry.getKey()+": "+entry.getValue());
+        }
+        player.sendMessage(assessment.getName()+": "+assessment.metric()+"\n"+
+                "Good work so far! You should try increasing your "+minMetric+" score!");
     }
 
+    /**
+     * Methodo to display leaderboard
+     * @param sender the player sending command
+     * @param scores the scores of the players on the server
+     */
     public static void sendLeaderboardFeedback(Player sender, ArrayList<OverallAssessment> scores){
         sender.sendMessage("LEADERBOARD");
         for(int k = 0; k < scores.size(); k++){
             int position = k+1;
-            sender.sendMessage(position+")\t"+ scores.get(k).getPlayer().getName()+": "+scores.get(k).metric());
+            sender.sendMessage(position+")   "+ scores.get(k).getPlayer().getName()+": "+scores.get(k).metric());
         }
     }
 

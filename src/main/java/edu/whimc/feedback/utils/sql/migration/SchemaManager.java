@@ -1,8 +1,8 @@
-package edu.whimc.ObservationAssesser.utils.sql.migration;
+package edu.whimc.feedback.utils.sql.migration;
 
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.utils.sql.migration.schemas.Schema_1;
+import edu.whimc.feedback.StudentFeedback;
+import edu.whimc.feedback.utils.sql.migration.schemas.Schema_1;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,10 +15,10 @@ public class SchemaManager {
 
     private static final SchemaVersion BASE_SCHEMA = new Schema_1();
 
-    private final ObservationAssesser plugin;
+    private final StudentFeedback plugin;
     private final Connection connection;
 
-    public SchemaManager(ObservationAssesser plugin, Connection connection) {
+    public SchemaManager(StudentFeedback plugin, Connection connection) {
         this.plugin = plugin;
         this.connection = connection;
     }

@@ -1,10 +1,7 @@
-package edu.whimc.ObservationAssesser.utils.sql;
+package edu.whimc.feedback.utils.sql;
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.utils.Utils;
-import edu.whimc.ObservationAssesser.utils.sql.migration.SchemaManager;
-import org.bukkit.Bukkit;
+import edu.whimc.feedback.StudentFeedback;
+import edu.whimc.feedback.utils.sql.migration.SchemaManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -25,13 +22,13 @@ public class MySQLConnection {
     private final String url;
     private final int port;
 
-    private final ObservationAssesser plugin;
+    private final StudentFeedback plugin;
 
     /**
      * Constructor to set SQL info from config
-     * @param plugin ObservationAssesser plugin instance
+     * @param plugin StudentFeedback plugin instance
      */
-    public MySQLConnection(ObservationAssesser plugin) {
+    public MySQLConnection(StudentFeedback plugin) {
 
         this.host = plugin.getConfig().getString("mysql.host", "localhost");
         this.port = plugin.getConfig().getInt("mysql.port", 3306);

@@ -1,11 +1,8 @@
-package edu.whimc.ObservationAssesser.commands;
+package edu.whimc.feedback.commands;
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.assessments.*;
-import edu.whimc.ObservationAssesser.utils.Utils;
-import edu.whimc.ObservationAssesser.utils.sql.Queryer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import edu.whimc.feedback.StudentFeedback;
+import edu.whimc.feedback.assessments.*;
+import edu.whimc.feedback.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,19 +11,18 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-import edu.whimc.ObservationAssesser.utils.Utils;
 /**
  * Class to define assessment command
  */
 public class ProgressCommand implements CommandExecutor, TabCompleter {
 
-    private final ObservationAssesser plugin;
+    private final StudentFeedback plugin;
 
     /**
      * Constructor to set instance variable
-     * @param plugin the ObservationAssesser plugin instance
+     * @param plugin the StudentFeedback plugin instance
      */
-    public ProgressCommand(ObservationAssesser plugin) {
+    public ProgressCommand(StudentFeedback plugin) {
         this.plugin = plugin;
     }
 
@@ -63,7 +59,7 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
     }
 
     /**
-     * Not necessary since command should not be invoked manually
+     * Allows tab completion
      * @param commandSender player sending the command
      * @param command the command being sent
      * @param s the command alias

@@ -1,32 +1,29 @@
-package edu.whimc.ObservationAssesser.commands;
+package edu.whimc.feedback.commands;
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.assessments.StructureAssessment;
-import edu.whimc.ObservationAssesser.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import edu.whimc.feedback.StudentFeedback;
+import edu.whimc.feedback.assessments.StructureAssessment;
+import edu.whimc.feedback.utils.Utils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class to define assessment command
+ * Class to define structure assessment command
  */
 public class AssessmentCommand implements CommandExecutor, TabCompleter {
 
-    private final ObservationAssesser plugin;
+    private final StudentFeedback plugin;
 
     /**
      * Constructor to set instance variable
-     * @param plugin the ObservationAssesser plugin instance
+     * @param plugin the StudentFeedback plugin instance
      */
-    public AssessmentCommand(ObservationAssesser plugin) {
+    public AssessmentCommand(StudentFeedback plugin) {
         this.plugin = plugin;
     }
 

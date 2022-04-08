@@ -1,14 +1,11 @@
-package edu.whimc.ObservationAssesser.utils.sql;
+package edu.whimc.feedback.utils.sql;
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
+import edu.whimc.feedback.StudentFeedback;
 
-import edu.whimc.ObservationAssesser.assessments.OverallAssessment;
-import edu.whimc.ObservationAssesser.bkt.Skills;
-import edu.whimc.ObservationAssesser.utils.Utils;
+import edu.whimc.feedback.assessments.OverallAssessment;
+import edu.whimc.feedback.bkt.Skills;
+import edu.whimc.feedback.utils.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
@@ -67,15 +64,15 @@ public class Queryer {
                     "(uuid, username, time, observation, science_tools, exploration, quest, score) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private final ObservationAssesser plugin;
+    private final StudentFeedback plugin;
     private final MySQLConnection sqlConnection;
 
     /**
      * Constructor to instantiate instance variables and connect to SQL
-     * @param plugin ObservationAssesser plugin instance
+     * @param plugin StudentFeedback plugin instance
      * @param callback callback to signal that process completed
      */
-    public Queryer(ObservationAssesser plugin, Consumer<Queryer> callback) {
+    public Queryer(StudentFeedback plugin, Consumer<Queryer> callback) {
         this.plugin = plugin;
         this.sqlConnection = new MySQLConnection(plugin);
 
@@ -201,7 +198,7 @@ public class Queryer {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_TOOLS)) {
                     statement.setString(1, player.getUniqueId().toString());
-                    statement.setInt(2, sessionStart.intValue());
+                    statement.setLong(2, sessionStart);
                     ResultSet results = statement.executeQuery();
                     while (results.next()) {
                         String worldName = results.getString("world");
@@ -229,7 +226,7 @@ public class Queryer {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_OBSERVATIONS)) {
                     statement.setString(1, player.getUniqueId().toString());
-                    statement.setInt(2, sessionStart.intValue());
+                    statement.setLong(2, sessionStart);
                     ResultSet results = statement.executeQuery();
                     while (results.next()) {
                         String worldName = results.getString("world");
@@ -248,8 +245,8 @@ public class Queryer {
     }
 
     /**
-     * Method to get skills for a player
-     * @param player Player to get the skills for
+     * Method to get positions for a player (must divide by 1000 because thats how it is stored in db)
+     * @param player Player to get the positions for
      * @param callback callback to signify process completion
      */
     public void getSessionPositions(Player player, Long sessionStart, Consumer callback){
@@ -258,7 +255,7 @@ public class Queryer {
             try (Connection connection = this.sqlConnection.getConnection()) {
                 try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_SESSION_POSITIONS)) {
                     statement.setString(1, player.getUniqueId().toString());
-                    statement.setInt(2, sessionStart.intValue());
+                    statement.setLong(2, sessionStart/1000);
                     ResultSet results = statement.executeQuery();
                     while (results.next()) {
                         String worldName = results.getString("world");

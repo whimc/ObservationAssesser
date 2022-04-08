@@ -1,7 +1,6 @@
-package edu.whimc.ObservationAssesser.bkt;
+package edu.whimc.feedback.bkt;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,15 +58,17 @@ public class Skills {
         }
 
         //BKT update rule application
-        double speedCalc = (previousSkills.get(skillType) * (1.0 - params[skillType][SLIPLOCATION])) + ((1.0 - previousSkills.get(skillType)) * params[skillType][GUESSLOCATION]);
+        if(skillType > -1) {
+            double speedCalc = (previousSkills.get(skillType) * (1.0 - params[skillType][SLIPLOCATION])) + ((1.0 - previousSkills.get(skillType)) * params[skillType][GUESSLOCATION]);
 
-        double update;
-        if(correct == 1) {
-            update = ((previousSkills.get(skillType) * (1.0 - params[skillType][SLIPLOCATION]))) / speedCalc;
-        } else {
-            update = ((previousSkills.get(skillType) * params[skillType][SLIPLOCATION])) / ((previousSkills.get(skillType) * params[skillType][SLIPLOCATION]) + ((1.0 - previousSkills.get(skillType))*(1.0 - params[skillType][GUESSLOCATION])));
+            double update;
+            if (correct == 1) {
+                update = ((previousSkills.get(skillType) * (1.0 - params[skillType][SLIPLOCATION]))) / speedCalc;
+            } else {
+                update = ((previousSkills.get(skillType) * params[skillType][SLIPLOCATION])) / ((previousSkills.get(skillType) * params[skillType][SLIPLOCATION]) + ((1.0 - previousSkills.get(skillType)) * (1.0 - params[skillType][GUESSLOCATION])));
+            }
+            currentSkills.set(skillType, update + ((1.0 - update) * params[skillType][TRANSFERLOCATION]));
         }
-        currentSkills.set(skillType, update + ((1.0 - update) * params[skillType][TRANSFERLOCATION]));
         return currentSkills;
     }
 }

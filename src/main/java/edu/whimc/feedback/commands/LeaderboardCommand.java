@@ -1,8 +1,8 @@
-package edu.whimc.ObservationAssesser.commands;
+package edu.whimc.feedback.commands;
 
-import edu.whimc.ObservationAssesser.ObservationAssesser;
-import edu.whimc.ObservationAssesser.assessments.*;
-import edu.whimc.ObservationAssesser.utils.Utils;
+import edu.whimc.feedback.StudentFeedback;
+import edu.whimc.feedback.assessments.*;
+import edu.whimc.feedback.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,11 +17,28 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
+/**
+ * Class to define leaderboard command
+ */
 public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
-    private ObservationAssesser plugin;
-    public LeaderboardCommand(ObservationAssesser plugin){
+    private StudentFeedback plugin;
+
+    /**
+     * Constructor to set instance variable
+     * @param plugin the StudentFeedback plugin instance
+     */
+    public LeaderboardCommand(StudentFeedback plugin){
         this.plugin = plugin;
     }
+
+    /**
+     * Defines behavior of command when invoked
+     * @param commandSender the player sending the command
+     * @param command the command being sent
+     * @param s the command alias
+     * @param strings the arguments sent with the command (separate elements are the words separated by spaces in the command)
+     * @return boolean for command execution
+     */
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         Player sender = (Player) commandSender;
@@ -29,9 +46,14 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
         this.getSortedLeaderboard(sessions, sorted -> {
             Utils.sendLeaderboardFeedback(sender, (ArrayList<OverallAssessment>) sorted);
         });
-
         return true;
     }
+
+    /**
+     * Method to synchronously sort the leaderboard with the player's scores
+     * @param sessions the players and times of people on the server
+     * @param callback the callback
+     */
     public void getSortedLeaderboard(HashMap<Player, Long> sessions, Consumer callback){
         async(() -> {
             ArrayList<OverallAssessment> scores = new ArrayList<>();
@@ -62,6 +84,7 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
 
         });
     }
+
     private <T> void sync(Consumer<T> cons, T val) {
         Bukkit.getScheduler().runTask(this.plugin, () -> cons.accept(val));
     }
@@ -72,6 +95,15 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
     private void async(Runnable runnable) {
         Bukkit.getScheduler().runTaskAsynchronously(this.plugin, runnable);
     }
+
+    /**
+     * Allows tab completion
+     * @param commandSender player sending the command
+     * @param command the command being sent
+     * @param s the command alias
+     * @param strings the args of the command
+     * @return list of string for tab completion for command
+     */
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
         return null;

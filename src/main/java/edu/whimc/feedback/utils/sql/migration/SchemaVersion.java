@@ -1,4 +1,4 @@
-package edu.whimc.ObservationAssesser.utils.sql.migration;
+package edu.whimc.feedback.utils.sql.migration;
 
 import com.google.common.io.Files;
 
@@ -26,7 +26,7 @@ public abstract class SchemaVersion {
 
     protected abstract void migrateRoutine(Connection connection) throws SQLException;
 
-    public final boolean migrate(edu.whimc.ObservationAssesser.utils.sql.migration.SchemaManager manager) {
+    public final boolean migrate(edu.whimc.feedback.utils.sql.migration.SchemaManager manager) {
         // Migrate the database
         try {
             migrateRoutine(manager.getConnection());

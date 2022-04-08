@@ -1,13 +1,13 @@
-# ObservationAssesser
+# WHIMC-StudentFeedback
 
-Plugin to assess student observations using machine learning and provide text and open-learner model feedback. Should be automatically invoked with WHIMC-Observation and not manually called.
+Plugin to assess student in-game behaviors and provide feedback
 
 ## Building
 Compile an uberjar from the command line by doing a "Build" via Maven:
 ```
 $ mvn clean package
 ```
-It should show up in the target directory.
+It should show up in the target directory use .
 
 ## Config
 ### MySQL
@@ -28,3 +28,11 @@ mysql:
   username: user
   password: pass
 ```
+
+## Commands
+| Command                                                     | Description                                                                                                                |
+|-------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| `/progress`                                                 | Display student progress on interest measures during session                                                               |
+| `/leaderboard`                                              | Display leaderboard of averages of student interest measures during session                                                |
+| `/observationassesser <observation> <type>`                 | Display progress bars for observation structure skills (should be called from Observations and not directly invoked)       |
+
