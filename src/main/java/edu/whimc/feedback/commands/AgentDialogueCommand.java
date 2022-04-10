@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Class to define structure assessment command
  */
-public class AssessmentCommand implements CommandExecutor {
+public class AgentDialogueCommand implements CommandExecutor {
 
     private final StudentFeedback plugin;
 
@@ -23,7 +23,7 @@ public class AssessmentCommand implements CommandExecutor {
      * Constructor to set instance variable
      * @param plugin the StudentFeedback plugin instance
      */
-    public AssessmentCommand(StudentFeedback plugin) {
+    public AgentDialogueCommand(StudentFeedback plugin) {
         this.plugin = plugin;
     }
 
@@ -38,18 +38,7 @@ public class AssessmentCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         Player player = (Player) commandSender;
-        //Need to preprocess lowercase and remove non alpha characters
-        String observation = String.join(" ", Arrays.copyOfRange(args,0,args.length-1));
-        observation.replaceAll("[^A-Za-z0-9]", "");
-        String observationType = args[args.length-1];
-
-        StructureAssessment assessment = new StructureAssessment(observation, observationType);
-
-        assessment.predict();
-        plugin.getQueryer().updateSkills(player, observationType, assessment.getCorrect(), currentSkills -> {
-            Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
-            player.sendMessage(assessment.getFeedback());
-        });
+        this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
         return true;
     }
 

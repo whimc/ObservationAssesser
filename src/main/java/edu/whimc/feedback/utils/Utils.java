@@ -2,6 +2,7 @@ package edu.whimc.feedback.utils;
 
 import com.google.common.base.Strings;
 
+import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -152,7 +153,15 @@ public class Utils {
 
         return id;
     }
+    public static Material matchMaterial(StudentFeedback plugin, String materialName, Material fallback) {
+        Material material = Material.matchMaterial(materialName);
+        if (material == null) {
+            plugin.getLogger().warning(Utils.color("&cUnknown material '&4" + materialName + "&c'! replacing with STONE."));
+            return fallback;
+        }
 
+        return material;
+    }
     public static List<String> getWorldsTabComplete(String hint) {
         return Bukkit.getWorlds().stream()
                 .filter(v -> v.getName().toLowerCase().startsWith(hint))
@@ -191,6 +200,20 @@ public class Utils {
         player.sendMessage("§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]");
         player.sendMessage("§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]");
         player.sendMessage("§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]");
+    }
+
+    /**
+     * Method to display open-learner model to student
+     * @param player the student to send the OLM to
+     * @param skills the students current skills
+     */
+    public static String getOpenLearnerModel(Player player, List<Double> skills){
+        String bars = "";
+        bars += "§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]";
+        bars += "§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]";
+        bars += "§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]";
+        bars += "§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]";
+        return bars;
     }
 
     /**

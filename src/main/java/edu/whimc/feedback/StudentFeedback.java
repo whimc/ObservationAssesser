@@ -1,6 +1,7 @@
 package edu.whimc.feedback;
 
 import edu.whimc.feedback.assessments.*;
+import edu.whimc.feedback.commands.AgentDialogueCommand;
 import edu.whimc.feedback.commands.AssessmentCommand;
 import edu.whimc.feedback.commands.LeaderboardCommand;
 import edu.whimc.feedback.commands.ProgressCommand;
@@ -17,7 +18,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
-
+import edu.whimc.feedback.dialoguetemplate.TemplateManager;
 
 /**
  * Class to create plugin and enable it in MC
@@ -27,7 +28,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     private static StudentFeedback instance;
     private Queryer queryer;
     private HashMap<Player,Long> sessions;
-
+    private TemplateManager templateManager;
     /**
      * Method to return instance of plugin
      * @return instance of StudentFeedback plugin
@@ -44,7 +45,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
         saveDefaultConfig();
         sessions = new HashMap<>();
         System.currentTimeMillis();
-
+        this.templateManager = new TemplateManager(this);
         StudentFeedback.instance = this;
         this.queryer = new Queryer(this, q -> {
             // If we couldn't connect to the database disable the plugin
@@ -63,6 +64,8 @@ public class StudentFeedback extends JavaPlugin implements Listener {
 
 
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
+
+        getCommand("agentdialogue").setExecutor(new AgentDialogueCommand(this));
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -114,6 +117,9 @@ public class StudentFeedback extends JavaPlugin implements Listener {
 
     }
 
+    public TemplateManager getTemplateManager(){
+        return templateManager;
+    }
     /**
      * Display when plugin cannot be enabled
      * @param sender

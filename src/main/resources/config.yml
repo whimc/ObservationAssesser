@@ -5,6 +5,86 @@ mysql:
   username: user
   password: pass
 
+template-gui:
+  text:
+    write-your-own-response: "Write your own response"
+    custom-response-sign-header: "&f&nYour Response"
+    uncategorized-sign-header: "&f&nYour dialogue"
+  filler-item: white_stained_glass_pane
+  inventory-name: "&lChoose an what type of dialogue do you want!"
+  rows: 4
+  cancel:
+    enabled: true
+    item: barrier
+    position: 27
+    name: "&cCancel"
+    lore:
+      - "&7Cancel our dialogue"
+
+templates:
+  OVERALL:
+    gui:
+      enabled: true
+      item: green_concrete
+      position: 10
+      name: '&aOverall Statistics'
+      lore:
+        - '&fI can quickly grade how well you have been progressing on the server.'
+    prompts:
+      - prompt: Observation Skills
+        worlds:
+          NoMoon:
+            feedback: I made a graphic of your progress on observation structure\n
+      - prompt: Quests
+        worlds:
+          NoMoon:
+            feedback: So far you have completed {} quests.
+  SESSION:
+    gui:
+      enabled: true
+      item: blue_concrete
+      position: 12
+      name: '&bSession Statistics'
+      lore:
+        - '&fI can quickly grade how you are doing today on the server.'
+    prompts:
+      - prompt: Observations
+        worlds:
+          NoMoon:
+              feedback: Your observation score for today is {}. You should try some different observation types or look for some unique aspects of this planet.
+      - prompt: Science Tools
+        worlds:
+          NoMoon:
+            feedback: Your science tool score for today is {}. You should try some different science tools to see how this planet is different from Earth.
+      - prompt: Exploration
+        worlds:
+          NoMoon:
+            feedback: Your exploration score for today is {}. You should try exploraing different areas of the world to find some unique aspects of this planet.
+
+  SCIENCE:
+    gui:
+      enabled: true
+      item: orange_concrete
+      position: 14
+      name: '&6Science Facts'
+      lore:
+        - '&fI can discuss some science facts relevant to this world.'
+    prompts:
+      - prompt: Trees
+        worlds:
+          NoMoon:
+            feedback: The trees are short and squat due to the extreme wind as a result of having no moon.
+      - prompt: Moon
+        worlds:
+          NoMoon:
+            feedback: There is no moon on this hypothetical world, try measuring the wind to see how this effects the Earth.
+      - prompt: Tides
+        worlds:
+          NoMoon:
+            feedback: Without the gravity of the moon the tides are a lot smaller than they are currently.
+
+
+
 worlds:
   RocketLaunch:
     display_name: Rocket Launch

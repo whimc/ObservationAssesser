@@ -14,3 +14,6 @@ commands:
   leaderboard:
     description: Displays order of current players on server
     usage: '/leaderboard'
+  agentdialogue:
+    description: Displays dialogue with agent
+    usage: '/agentdialogue'
