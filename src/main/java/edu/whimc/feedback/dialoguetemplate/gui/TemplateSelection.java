@@ -28,6 +28,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
+/**
+ * Class to handle flow of dialogue
+ */
 public class TemplateSelection implements Listener {
 
     /* Unicode for check character */
@@ -58,7 +61,7 @@ public class TemplateSelection implements Listener {
         UUID uuid = player.getUniqueId();
         if (ongoingSelections.containsKey(uuid)) {
             ongoingSelections.get(uuid).destroySelection();
-            Utils.msg(player, "Our previous dialogue was canceled because you started a new one!");
+            Utils.msg(player, "Lets start a new conversation!");
         }
 
         this.plugin = plugin;
@@ -94,7 +97,7 @@ public class TemplateSelection implements Listener {
         Player player = getPlayer();
 
         sendHeader();
-        Utils.msgNoPrefix(player, "&lClick the option you want me to help you with:", "");
+        Utils.msgNoPrefix(player, "&lWhat do you want to talk about?", "");
 
         for (DialoguePrompt curPrompt : this.template.getPrompts()) {
             sendComponent(
@@ -157,10 +160,7 @@ public class TemplateSelection implements Listener {
         } else if (this.template.getType().equals(DialogueType.SCIENCE)){
             doStage(TemplateSelectionStage.CONFIRM);
         }
-        sendFooter(false, p -> {
 
-            doStage(TemplateSelectionStage.SELECT_PROMPT);
-        });
     }
 
     private void doConfirm() {
@@ -169,7 +169,7 @@ public class TemplateSelection implements Listener {
         sendHeader();
 
         Utils.msgNoPrefix(player, feedback,
-                "&f&lAre you satisfied with my answers?");
+                "&f&lAre you done chatting?");
 
         sendFooter(true, p -> {
             doStage(TemplateSelectionStage.SELECT_PROMPT);
@@ -214,7 +214,7 @@ public class TemplateSelection implements Listener {
             };
 
             builder.append(createComponent(
-                            "&a&l" + CHECK + " Confirm",
+                            "&a&l" + CHECK + " Done",
                             "&aClick to finish our dialogue!",
                             confirmCallback))
                     .append("  ");
@@ -233,7 +233,7 @@ public class TemplateSelection implements Listener {
 
         if (goBackCallback != null) {
             builder.append("  ").append(createComponent(
-                    "&e&l< Go Back",
+                    "&e&l< Change Topic",
                     "&eClick to go back to the previous panel",
                     goBackCallback));
         }

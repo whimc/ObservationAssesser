@@ -1,5 +1,8 @@
 package edu.whimc.feedback.dialoguetemplate;
 
+/**
+ * Class for dialogue font to send to the player
+ */
 public enum DefaultFontInfo {
 
     A('A', 5),

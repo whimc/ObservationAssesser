@@ -3,6 +3,9 @@ package edu.whimc.feedback.dialoguetemplate;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
+/**
+ * Class to format messages to player
+ */
 public final class CenteredText {
 
     private final static int CENTER_PX = 158;

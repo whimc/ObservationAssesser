@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class to hold entries from config for dialogues
+ */
 public class DialoguePrompt {
 
     public static final String FILLIN = "{}";

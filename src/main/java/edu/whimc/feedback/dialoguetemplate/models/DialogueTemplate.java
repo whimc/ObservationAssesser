@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class to handle config entries for inventory UI
+ */
 public class DialogueTemplate {
 
     private final List<DialoguePrompt> prompts = new ArrayList<>();

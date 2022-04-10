@@ -11,7 +11,7 @@ template-gui:
     custom-response-sign-header: "&f&nYour Response"
     uncategorized-sign-header: "&f&nYour dialogue"
   filler-item: white_stained_glass_pane
-  inventory-name: "&lChoose an what type of dialogue do you want!"
+  inventory-name: "&lChoose a conversation topic!"
   rows: 4
   cancel:
     enabled: true

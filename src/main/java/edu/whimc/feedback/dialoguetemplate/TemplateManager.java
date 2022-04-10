@@ -12,6 +12,9 @@ import edu.whimc.feedback.dialoguetemplate.models.DialogueType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class to instantiate agent dialogue
+ */
 public class TemplateManager {
 
     private final TemplateGui gui;

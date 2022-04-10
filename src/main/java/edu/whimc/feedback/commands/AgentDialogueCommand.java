@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Class to define structure assessment command
+ * Class to define structure agent dialogue command
  */
 public class AgentDialogueCommand implements CommandExecutor {
 

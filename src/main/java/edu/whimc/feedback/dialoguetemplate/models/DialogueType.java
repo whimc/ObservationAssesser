@@ -2,6 +2,9 @@ package edu.whimc.feedback.dialoguetemplate.models;
 
 import org.apache.commons.lang.StringUtils;
 
+/**
+ * Types of topics that the agent can have
+ */
 public enum DialogueType {
 
     SESSION,

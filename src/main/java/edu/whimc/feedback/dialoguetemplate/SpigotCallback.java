@@ -12,6 +12,9 @@ import org.bukkit.plugin.Plugin;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Class to handle proper timing of conversation
+ */
 public class SpigotCallback {
 
     private final Map<UUID, Consumer<Player>> callbacks = new HashMap<>();

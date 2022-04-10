@@ -22,6 +22,9 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+/**
+ * Class to handle inventory UI to choose dialogue topicss
+ */
 public final class TemplateGui implements Listener {
 
     private final StudentFeedback plugin;
