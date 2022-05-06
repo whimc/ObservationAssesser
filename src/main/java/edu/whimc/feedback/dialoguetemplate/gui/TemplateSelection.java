@@ -129,10 +129,12 @@ public class TemplateSelection implements Listener {
                     doStage(TemplateSelectionStage.CONFIRM);
                 });
             } else if (this.prompt.getPrompt().equalsIgnoreCase("Quests")){
-                QuestAssessment quest = new QuestAssessment(player, sessionStart, null);
+                plugin.getQueryer().getQuestsCompleted(player, quests -> {
+                QuestAssessment quest = new QuestAssessment(player, sessionStart, quests);
                 Double metric = new Double(quest.metric());
                 feedback = replaceFirst(this.feedback, DialoguePrompt.FILLIN, metric.toString());
                 doStage(TemplateSelectionStage.CONFIRM);
+                });
             }
         } else if (this.template.getType().equals(DialogueType.SESSION)){
             if(this.prompt.getPrompt().equalsIgnoreCase("Observations")){

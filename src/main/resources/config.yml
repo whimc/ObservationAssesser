@@ -11,7 +11,7 @@ template-gui:
     custom-response-sign-header: "&f&nYour Response"
     uncategorized-sign-header: "&f&nYour dialogue"
   filler-item: white_stained_glass_pane
-  inventory-name: "&lChoose a conversation topic!"
+  inventory-name: "&lTopics"
   rows: 4
   cancel:
     enabled: true
@@ -137,21 +137,21 @@ worlds:
 
   TiltedEarth_Frozen:
     display_name: Tilted Earth (Frozen)
-    pixel_to_block_ratio: 1
+    pixel_to_block_ratio: 4
     top_left_coordinate_x: -330
     top_left_coordinate_z: -200
 
   TiltedEarth_JungleIsland:
     display_name: Tilted Earth (Jungle)
-    pixel_to_block_ratio: 2
+    pixel_to_block_ratio: 4
     top_left_coordinate_x: -301
     top_left_coordinate_z: -169
 
   TiltedEarth_Melting:
     display_name: Tilted Earth (Melting)
     pixel_to_block_ratio: 2
-    top_left_coordinate_x: -315
-    top_left_coordinate_z: -244
+    top_left_coordinate_x: -395
+    top_left_coordinate_z: -394
 
   Mynoa_close:
     display_name: Mynoa (Close)
@@ -250,4 +250,3 @@ worlds:
     pixel_to_block_ratio: 1
     top_left_coordinate_x: -340
     top_left_coordinate_z: -410
-

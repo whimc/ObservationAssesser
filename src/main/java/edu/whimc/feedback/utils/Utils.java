@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
  */
 public class Utils {
 
-    private static final String PREFIX = "&8&l[&9&lObservations&8&l]&r ";
+    private static final String PREFIX = "&8&l[&9&lFeedback&8&l]&r ";
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMMM d yyyy, h:mm a z");
     private static boolean debug = false;
-    private static String debugPrefix = "[Observations] ";
+    private static String debugPrefix = "[Feedback] ";
 
     public static void setDebug(boolean shouldDebug) {
         debug = shouldDebug;
@@ -209,9 +209,9 @@ public class Utils {
      */
     public static String getOpenLearnerModel(Player player, List<Double> skills){
         String bars = "";
-        bars += "§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]";
-        bars += "§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]";
-        bars += "§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]";
+        bars += "§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]\n";
+        bars += "§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]\n";
+        bars += "§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]\n";
         bars += "§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]";
         return bars;
     }

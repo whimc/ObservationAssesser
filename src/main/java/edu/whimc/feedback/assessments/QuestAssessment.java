@@ -2,6 +2,10 @@ package edu.whimc.feedback.assessments;
 
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
 /**
  * Class to define quest assessment
  */
@@ -16,7 +20,8 @@ public class QuestAssessment extends ProgressAssessment{
      */
     @Override
     public double metric() {
-        return 0;
+        ArrayList<String> completedQuests = (ArrayList<String>) this.getResultSet();
+        return completedQuests.size();
     }
 
     /**

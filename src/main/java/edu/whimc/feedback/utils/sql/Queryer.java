@@ -40,6 +40,10 @@ public class Queryer {
             "SELECT * FROM whimc_skills "+
             "WHERE uuid=?;";
 
+    //Query for getting observation use during session from the database.
+    private static final String QUERY_GET_QUESTS =
+            "SELECT * FROM quests_player_completedquests "+
+                    "WHERE uuid=?;";
 
     //Query for getting science tool use during session from the database.
     private static final String QUERY_GET_SESSION_TOOLS =
@@ -86,11 +90,14 @@ public class Queryer {
      * Generated a PreparedStatement for saving a new set of skills for a player.
      * @param connection MySQL Connection
      * @param player     Player to save skills
-     * @param skills     SKills to give to the player
      * @return PreparedStatement
      * @throws SQLException
      */
-    private PreparedStatement insertNewSkills(Connection connection, Player player, List<Double> skills) throws SQLException {
+    private PreparedStatement insertNewSkills(Connection connection, Player player) throws SQLException {
+        List<Double> skills = new ArrayList<>();
+        for(int k = 0; k < 4; k++) {
+            skills.add(0.0);
+        }
         PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_SKILLS);
         statement.setString(1, player.getUniqueId().toString());
         statement.setString(2, player.getName());
@@ -135,10 +142,7 @@ public class Queryer {
 
                 try (Connection connection = this.sqlConnection.getConnection()) {
                     if (skills.size() == 0) {
-                        for(int k = 0; k < 5; k++) {
-                            skills.add(0.0);
-                        }
-                        try (PreparedStatement insertStatement = insertNewSkills(connection, player, skills)) {
+                        try (PreparedStatement insertStatement = insertNewSkills(connection, player)) {
                             String query = insertStatement.toString().substring(insertStatement.toString().indexOf(" ") + 1);
                             Utils.debug("  " + query);
                             insertStatement.executeUpdate();
@@ -179,7 +183,42 @@ public class Queryer {
                         skills.add(results.getDouble("descriptive"));
                         skills.add(results.getDouble("inference"));
                     }
+
+                    if (skills.size() == 0) {
+                        try (PreparedStatement insertStatement = insertNewSkills(connection, player)) {
+                            String query = insertStatement.toString().substring(insertStatement.toString().indexOf(" ") + 1);
+                            Utils.debug("  " + query);
+                            insertStatement.executeUpdate();
+                        }
+                        for(int k = 0; k < 4; k++) {
+                            skills.add(0.0);
+                        }
+                    }
                     sync(callback,skills);
+                }
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Method to get skills for a player
+     * @param player Player to get the skills for
+     * @param callback callback to signify process completion
+     */
+    public void getQuestsCompleted(Player player, Consumer callback){
+        async(() -> {
+            ArrayList<String> questsCompleted = new ArrayList<>();
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(QUERY_GET_QUESTS)) {
+                    statement.setString(1, player.getUniqueId().toString());
+                    ResultSet results = statement.executeQuery();
+                    while (results.next()) {
+                        String quest = results.getString("questid");
+                        questsCompleted.add(quest);
+                    }
+                    sync(callback,questsCompleted);
                 }
             } catch (SQLException exc) {
                 exc.printStackTrace();
@@ -215,6 +254,7 @@ public class Queryer {
             }
         });
     }
+
     /**
      * Method to get skills for a player
      * @param player Player to get the skills for

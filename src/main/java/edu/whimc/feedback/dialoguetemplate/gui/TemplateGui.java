@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
- * Class to handle inventory UI to choose dialogue topicss
+ * Class to handle inventory UI to choose dialogue topics
  */
 public final class TemplateGui implements Listener {
 
@@ -82,7 +82,7 @@ public final class TemplateGui implements Listener {
 
             // Add inventory item and action
             this.inventory.setItem(this.cancelPosition, this.cancelItem);
-            setAction(this.cancelPosition, p -> Utils.msg(p, "Observation canceled!"));
+            setAction(this.cancelPosition, p -> Utils.msg(p, "Dialogue canceled!"));
         }
 
         // Add template-specific items

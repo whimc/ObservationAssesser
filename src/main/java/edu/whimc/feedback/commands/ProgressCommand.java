@@ -3,6 +3,7 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import edu.whimc.feedback.utils.Utils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,6 +37,10 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
      */
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+        if (!(commandSender instanceof Player)) {
+            Utils.msg(commandSender, ChatColor.RED + "You must be a player!");
+            return true;
+        }
         Player player = (Player) commandSender;
 
         HashMap<Player,Long> sessions = plugin.getPlayerSessions();

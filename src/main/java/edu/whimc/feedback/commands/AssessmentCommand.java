@@ -3,6 +3,7 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.StructureAssessment;
 import edu.whimc.feedback.utils.Utils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,6 +38,10 @@ public class AssessmentCommand implements CommandExecutor {
      */
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+        if (!(commandSender instanceof Player)) {
+            Utils.msg(commandSender, ChatColor.RED + "You must be a player!");
+            return true;
+        }
         Player player = (Player) commandSender;
         //Need to preprocess lowercase and remove non alpha characters
         String observation = String.join(" ", Arrays.copyOfRange(args,0,args.length-1));
