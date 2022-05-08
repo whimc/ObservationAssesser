@@ -19,6 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import edu.whimc.feedback.dialoguetemplate.TemplateManager;
+import edu.whimc.feedback.dialoguetemplate.SignMenuFactory;
 
 /**
  * Class to create plugin and enable it in MC
@@ -29,6 +30,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     private Queryer queryer;
     private HashMap<Player,Long> sessions;
     private TemplateManager templateManager;
+    private SignMenuFactory signMenuFactory;
     /**
      * Method to return instance of plugin
      * @return instance of StudentFeedback plugin
@@ -46,6 +48,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
         sessions = new HashMap<>();
         System.currentTimeMillis();
         this.templateManager = new TemplateManager(this);
+        this.signMenuFactory = new SignMenuFactory(this);
         StudentFeedback.instance = this;
         this.queryer = new Queryer(this, q -> {
             // If we couldn't connect to the database disable the plugin
@@ -133,5 +136,9 @@ public class StudentFeedback extends JavaPlugin implements Listener {
         Utils.msg(sender, "&cThis plugin is disabled because it was unable to connect to the configured database. " +
                 "Please modify the config to ensure the credentials are correct then restart the server.");
         return true;
+    }
+
+    public SignMenuFactory getSignMenuFactory() {
+        return signMenuFactory;
     }
 }

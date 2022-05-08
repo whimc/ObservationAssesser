@@ -51,7 +51,8 @@ public class TemplateSelection implements Listener {
     private final DialogueTemplate template;
     /* The UUID of the player making the selection */
     private final UUID uuid;
-
+    /* Default science prompt if student input doesn't match */
+    private static final String DEFAULT_SCIENCE = "default";
     /* The selected prompt from the template */
     private DialoguePrompt prompt = null;
     /* The stage of the selection */
@@ -98,22 +99,75 @@ public class TemplateSelection implements Listener {
 
         sendHeader();
         Utils.msgNoPrefix(player, "&lWhat do you want to talk about?", "");
+        if (this.template.getType().equals(DialogueType.SCIENCE)) {
+            // generative knowledge custom response
+            String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
+            String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
 
-        for (DialoguePrompt curPrompt : this.template.getPrompts()) {
             sendComponent(
                     player,
-                    "&8" + BULLET + " &r" + curPrompt.getPrompt(),
-                    "&aClick here to select \"&r" + curPrompt.getPrompt() + "&a\"",
-                    p -> {
-                        this.prompt = curPrompt;
-                        doStage(TemplateSelectionStage.SELECT_RESPONSE);
-                    });
+                    "&8" + BULLET + template.getColor() + " " + customResponse,
+                    "&aClick here to write your own response!",
+                    p -> this.plugin.getSignMenuFactory()
+                            .newMenu(Collections.singletonList(Utils.color(signHeader)))
+                            .reopenIfFail(true)
+                            .response((signPlayer, strings) -> {
+                                String response = StringUtils.join(Arrays.copyOfRange(strings, 0, strings.length), ' ').trim();
+                                response = response.toLowerCase();
+                                //To ensure default is properly displayed if chat again
+                                this.prompt = null;
+                                if (response.isEmpty()) {
+                                    return false;
+                                }
+                                for(int k = 0; k < this.template.getPrompts().size(); k++){
+                                    DialoguePrompt currPrompt = this.template.getPrompts().get(k);
+                                    if(currPrompt.getPrompt().contains(",")){
+                                        String[] validPrompts = currPrompt.getPrompt().split(", ");
+                                        for (int j = 0; j < validPrompts.length; j++) {
+                                            if (response.contains(validPrompts[j])) {
+                                                this.prompt = currPrompt;
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        if (response.contains(currPrompt.getPrompt())) {
+                                            this.prompt = currPrompt;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if(this.prompt == null){
+                                    for(int k = 0; k < this.template.getPrompts().size(); k++){
+                                        DialoguePrompt currPrompt = this.template.getPrompts().get(k);
+                                        if(DEFAULT_SCIENCE.equalsIgnoreCase(currPrompt.getPrompt())){
+                                            this.prompt = currPrompt;
+                                            break;
+                                        }
+                                    }
+                                }
+                                doStage(TemplateSelectionStage.SELECT_RESPONSE);
+                                return true;
+                            })
+                            .open(p)
+            );
+
+        } else {
+            for (DialoguePrompt curPrompt : this.template.getPrompts()) {
+                sendComponent(
+                        player,
+                        "&8" + BULLET + " &r" + curPrompt.getPrompt(),
+                        "&aClick here to select \"&r" + curPrompt.getPrompt() + "&a\"",
+                        p -> {
+                            this.prompt = curPrompt;
+                            doStage(TemplateSelectionStage.SELECT_RESPONSE);
+                        });
+            }
         }
 
-        sendFooter(false, p -> {
-            destroySelection();
-            this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
-        });
+            sendFooter(false, p -> {
+                destroySelection();
+                this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
+            });
     }
 
     private void doSelectResponse() {

@@ -1,5 +1,6 @@
 package edu.whimc.feedback.assessments;
 
+import org.bukkit.Bukkit;
 import org.pmml4s.model.Model;
 
 /**
@@ -28,16 +29,12 @@ public class StructureAssessment {
         String[]input = {this.observation};
         Model model = Model.fromFile(System.getProperty("user.dir")+"/plugins/model.pmml");
         Object[] result = model.predict(input);
-        int labelIndex = 0;
-        String[] classes = {"analogy", "comparative", "descriptive", "inference", "factual", "off topic", "measurement mistake"};
-        for(int k= 1; k < result.length; k++){
-            if((double) result[k] > (double) result[labelIndex]){
-                labelIndex = k;
-            }
-        }
 
+        String[] classes = {"analogy", "comparative", "descriptive", "inference", "factual", "off topic", "measurement mistake"};
+        //Results formatted as [predicted class, highest score, label 0 score, label 1 score,..., label n-1 score)
+        int predicted = Integer.parseInt(String.valueOf(result[0]));
         //Correct if predicted type = self-classified type, if null not counted as either
-        predictedType = classes[labelIndex];
+        predictedType = classes[predicted];
         if(observationType != null) {
             if (predictedType.equalsIgnoreCase(observationType)) {
                 correct = 1;

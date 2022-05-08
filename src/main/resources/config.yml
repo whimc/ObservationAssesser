@@ -8,8 +8,8 @@ mysql:
 template-gui:
   text:
     write-your-own-response: "Write your own response"
-    custom-response-sign-header: "&f&nYour Response"
-    uncategorized-sign-header: "&f&nYour dialogue"
+    custom-response-sign-header: "&f&nScience topic"
+    uncategorized-sign-header: "&f&nYour Response"
   filler-item: white_stained_glass_pane
   inventory-name: "&lTopics"
   rows: 4
@@ -33,11 +33,11 @@ templates:
     prompts:
       - prompt: Observation Skills
         worlds:
-          NoMoon:
+          ALL:
             feedback: I made a graphic of your progress on observation structure\n
       - prompt: Quests
         worlds:
-          NoMoon:
+          ALL:
             feedback: So far you have completed {} quests.
   SESSION:
     gui:
@@ -50,15 +50,15 @@ templates:
     prompts:
       - prompt: Observations
         worlds:
-          NoMoon:
+          ALL:
               feedback: Your observation score for today is {}. You should try some different observation types or look for some unique aspects of this planet.
       - prompt: Science Tools
         worlds:
-          NoMoon:
+          ALL:
             feedback: Your science tool score for today is {}. You should try some different science tools to see how this planet is different from Earth.
       - prompt: Exploration
         worlds:
-          NoMoon:
+          ALL:
             feedback: Your exploration score for today is {}. You should try exploraing different areas of the world to find some unique aspects of this planet.
 
   SCIENCE:
@@ -70,18 +70,26 @@ templates:
       lore:
         - '&fI can discuss some science facts relevant to this world.'
     prompts:
-      - prompt: Trees
+      - prompt: tree
         worlds:
           NoMoon:
             feedback: The trees are short and squat due to the extreme wind as a result of having no moon.
-      - prompt: Moon
+      - prompt: moon
         worlds:
           NoMoon:
             feedback: There is no moon on this hypothetical world, try measuring the wind to see how this effects the Earth.
-      - prompt: Tides
+      - prompt: tide
         worlds:
           NoMoon:
             feedback: Without the gravity of the moon the tides are a lot smaller than they are currently.
+      - prompt: airflow, wind
+        worlds:
+          NoMoon:
+            feedback: Without the gravity of the moon the Earth rotates faster making it windier.
+      - prompt: default
+        worlds:
+          ALL:
+            feedback: Sorry, I am don't think that is an important feature on this planet.
 
 
 

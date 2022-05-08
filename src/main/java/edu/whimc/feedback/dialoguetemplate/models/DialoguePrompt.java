@@ -15,9 +15,10 @@ public class DialoguePrompt {
 
     public static final String FILLIN = "{}";
 
+    public static final String GLOBAL_FEEDBACK = "ALL";
     private final String prompt;
 
-    private final Map<World, Map<String, String>> responses;
+    private final Map<String, Map<String, String>> responses;
 
     @SuppressWarnings("unchecked")
     public DialoguePrompt(Map<?, ?> entry) {
@@ -27,8 +28,7 @@ public class DialoguePrompt {
 
         Map<String, Object> worlds = (Map<String, Object>) entry.get("worlds");
         for (String worldName : worlds.keySet()) {
-            World world = Bukkit.getWorld(worldName);
-            this.responses.put(world, (Map<String, String>) worlds.get(worldName));
+            this.responses.put(worldName, (Map<String, String>) worlds.get(worldName));
         }
     }
 
@@ -37,11 +37,11 @@ public class DialoguePrompt {
     }
 
     public String getResponses(World world, String key) {
-        if (!this.responses.containsKey(world)) {
-            return "";
+        if (!this.responses.containsKey(world.getName())) {
+            return this.responses.get(GLOBAL_FEEDBACK).get(key);
         }
 
-        return this.responses.get(world).get(key);
+        return this.responses.get(world.getName()).get(key);
     }
 
     public int getNumberOfFillIns(World world) {
