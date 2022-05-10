@@ -58,6 +58,14 @@ public class TemplateSelection implements Listener {
     /* The stage of the selection */
     private TemplateSelectionStage stage;
     private String feedback;
+    private final long interactionStart;
+    private int ovr_obs;
+    private int quests;
+    private int session_obs;
+    private int sci_tools;
+    private int exp_metric;
+    private int sci_topics;
+
     public TemplateSelection(StudentFeedback plugin, SpigotCallback spigotCallback, Player player, DialogueTemplate template) {
         UUID uuid = player.getUniqueId();
         if (ongoingSelections.containsKey(uuid)) {
@@ -69,6 +77,13 @@ public class TemplateSelection implements Listener {
         this.spigotCallback = spigotCallback;
         this.template = template;
         this.uuid = uuid;
+        this.interactionStart = System.currentTimeMillis();
+        this.ovr_obs = 0;
+        this.quests = 0;
+        this.session_obs = 0;
+        this.sci_tools = 0;
+        this.exp_metric = 0;
+        this.sci_topics = 0;
 
         // Register this class as a listener to cancel clickables if they change worlds
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -98,8 +113,9 @@ public class TemplateSelection implements Listener {
         Player player = getPlayer();
 
         sendHeader();
-        Utils.msgNoPrefix(player, "&lWhat do you want to talk about?", "");
+
         if (this.template.getType().equals(DialogueType.SCIENCE)) {
+            Utils.msgNoPrefix(player, "&lWhat unique science topic on this planet do you want to discuss?", "");
             // generative knowledge custom response
             String signHeader = this.plugin.getConfig().getString("template-gui.text.custom-response-sign-header", "&f&nYour response");
             String customResponse = this.plugin.getConfig().getString("template-gui.text.write-your-own-response", "Write your own response");
@@ -121,18 +137,20 @@ public class TemplateSelection implements Listener {
                                 }
                                 for(int k = 0; k < this.template.getPrompts().size(); k++){
                                     DialoguePrompt currPrompt = this.template.getPrompts().get(k);
-                                    if(currPrompt.getPrompt().contains(",")){
-                                        String[] validPrompts = currPrompt.getPrompt().split(", ");
-                                        for (int j = 0; j < validPrompts.length; j++) {
-                                            if (response.contains(validPrompts[j])) {
+                                    if(currPrompt.getResponses(player.getWorld(),"feedback") != null) {
+                                        if (currPrompt.getPrompt().contains(",")) {
+                                            String[] validPrompts = currPrompt.getPrompt().split(", ");
+                                            for (int j = 0; j < validPrompts.length; j++) {
+                                                if (response.contains(validPrompts[j])) {
+                                                    this.prompt = currPrompt;
+                                                    break;
+                                                }
+                                            }
+                                        } else {
+                                            if (response.contains(currPrompt.getPrompt())) {
                                                 this.prompt = currPrompt;
                                                 break;
                                             }
-                                        }
-                                    } else {
-                                        if (response.contains(currPrompt.getPrompt())) {
-                                            this.prompt = currPrompt;
-                                            break;
                                         }
                                     }
                                 }
@@ -152,6 +170,7 @@ public class TemplateSelection implements Listener {
             );
 
         } else {
+            Utils.msgNoPrefix(player, "&lWhat statistic do you want to see?", "");
             for (DialoguePrompt curPrompt : this.template.getPrompts()) {
                 sendComponent(
                         player,
@@ -165,8 +184,10 @@ public class TemplateSelection implements Listener {
         }
 
             sendFooter(false, p -> {
-                destroySelection();
-                this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
+                this.plugin.getQueryer().storeNewInteraction(this, id -> {
+                    destroySelection();
+                    this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
+                });
             });
     }
 
@@ -178,11 +199,13 @@ public class TemplateSelection implements Listener {
 
         if(this.template.getType().equals(DialogueType.OVERALL)){
             if(this.prompt.getPrompt().equalsIgnoreCase("Observation Skills")){
+                ovr_obs++;
                 plugin.getQueryer().getSkills(player, currentSkills -> {
                     feedback = Utils.getOpenLearnerModel(player, (List<Double>) currentSkills);
                     doStage(TemplateSelectionStage.CONFIRM);
                 });
             } else if (this.prompt.getPrompt().equalsIgnoreCase("Quests")){
+                quests++;
                 plugin.getQueryer().getQuestsCompleted(player, quests -> {
                 QuestAssessment quest = new QuestAssessment(player, sessionStart, quests);
                 Double metric = new Double(quest.metric());
@@ -192,6 +215,7 @@ public class TemplateSelection implements Listener {
             }
         } else if (this.template.getType().equals(DialogueType.SESSION)){
             if(this.prompt.getPrompt().equalsIgnoreCase("Observations")){
+                session_obs++;
                 plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
                     ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
                     Double metric = new Double(obs.metric());
@@ -199,6 +223,7 @@ public class TemplateSelection implements Listener {
                     doStage(TemplateSelectionStage.CONFIRM);
                 });
             } else if (this.prompt.getPrompt().equalsIgnoreCase("Science Tools")) {
+                sci_tools++;
                 plugin.getQueryer().getSessionScienceTools(player, sessionStart, tools -> {
                     ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, tools);
                     Double metric = new Double(sci.metric());
@@ -206,6 +231,7 @@ public class TemplateSelection implements Listener {
                     doStage(TemplateSelectionStage.CONFIRM);
                 });
             } else if (this.prompt.getPrompt().equalsIgnoreCase("Exploration")) {
+                exp_metric++;
                 plugin.getQueryer().getSessionPositions(player, sessionStart, pos -> {
                     ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, pos, plugin);
                     Double metric = new Double(exp.metric());
@@ -214,6 +240,7 @@ public class TemplateSelection implements Listener {
                 });
             }
         } else if (this.template.getType().equals(DialogueType.SCIENCE)){
+            sci_topics++;
             doStage(TemplateSelectionStage.CONFIRM);
         }
 
@@ -266,7 +293,9 @@ public class TemplateSelection implements Listener {
             Consumer<Player> confirmCallback = p -> {
                 Utils.msgNoPrefix(player,
                         "&f&lThanks for talking, go explore!");
-                destroySelection();
+                this.plugin.getQueryer().storeNewInteraction(this, id -> {
+                    destroySelection();
+            });
             };
 
             builder.append(createComponent(
@@ -279,7 +308,9 @@ public class TemplateSelection implements Listener {
         Consumer<Player> cancelCallback = p -> {
             Utils.msgNoPrefix(player,
                     "&f&lDialogue cancelled, have fun exploring!");
-            destroySelection();
+            this.plugin.getQueryer().storeNewInteraction(this, id -> {
+                destroySelection();
+            });
         };
 
         builder.append(createComponent(
@@ -299,10 +330,13 @@ public class TemplateSelection implements Listener {
         CenteredText.sendCenteredMessage(player, " &7Click to make a selection ", "&7&m &r");
     }
 
-    private Player getPlayer() {
+    public Player getPlayer() {
         return Bukkit.getPlayer(this.uuid);
     }
-
+    public long getInteractionStart(){return interactionStart;}
+    public int[] getInteraction(){
+        return new int[]{ovr_obs, quests, session_obs, sci_tools, exp_metric, sci_topics};
+    }
     private void destroySelection() {
         // Clear callbacks
         this.spigotCallback.clearCallbacks(getPlayer());

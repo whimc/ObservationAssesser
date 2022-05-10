@@ -43,6 +43,7 @@ public class AgentDialogueCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) commandSender;
+
         this.plugin.getTemplateManager().getGui().openTemplateInventory(player);
         return true;
     }

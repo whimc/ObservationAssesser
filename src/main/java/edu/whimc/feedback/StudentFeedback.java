@@ -109,10 +109,12 @@ public class StudentFeedback extends JavaPlugin implements Listener {
                 ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
                 queryer.getSessionPositions(player,sessionStart, positions -> {
                     ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, this);
-                    QuestAssessment quest = new QuestAssessment(player, sessionStart, null);
-                    OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                    queryer.storeNewProgress(assessment, rowID -> {
-                        sessions.remove(event.getPlayer());
+                    queryer.getQuestsCompleted(player, completedQuests -> {
+                        QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                        OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                        queryer.storeNewProgress(assessment, rowID -> {
+                            sessions.remove(event.getPlayer());
+                        });
                     });
                 });
             });

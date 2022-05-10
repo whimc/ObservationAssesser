@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  */
 public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
     private StudentFeedback plugin;
-
+    private final String COMMAND = "leaderboard";
     /**
      * Constructor to set instance variable
      * @param plugin the StudentFeedback plugin instance
@@ -48,8 +48,10 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
         }
         Player sender = (Player) commandSender;
         HashMap<Player,Long> sessions = plugin.getPlayerSessions();
-        this.getSortedLeaderboard(sessions, sorted -> {
-            Utils.sendLeaderboardFeedback(sender, (ArrayList<OverallAssessment>) sorted);
+        this.plugin.getQueryer().storeNewProgressCommand(sender, COMMAND, id -> {
+            this.getSortedLeaderboard(sessions, sorted -> {
+                Utils.sendLeaderboardFeedback(sender, (ArrayList<OverallAssessment>) sorted);
+            });
         });
         return true;
     }
@@ -73,15 +75,16 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
                     ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
                     plugin.getQueryer().getSessionPositions(player,sessionStart, positions -> {
                         ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
-                        QuestAssessment quest = new QuestAssessment(player, sessionStart, null);
-                        OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                        scores.add(assessment);
-                        ctr.getAndIncrement();
-                        if(ctr.get() == sessions.keySet().size()){
-                            scores.sort(new AssessmentComparator());
-                            sync(callback,scores);
-                        }
-
+                        plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
+                            QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                            OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                            scores.add(assessment);
+                            ctr.getAndIncrement();
+                            if (ctr.get() == sessions.keySet().size()) {
+                                scores.sort(new AssessmentComparator());
+                                sync(callback, scores);
+                            }
+                        });
                     });
                 });
             });

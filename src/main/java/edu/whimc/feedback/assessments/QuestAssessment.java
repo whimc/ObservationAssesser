@@ -21,7 +21,10 @@ public class QuestAssessment extends ProgressAssessment{
     @Override
     public double metric() {
         ArrayList<String> completedQuests = (ArrayList<String>) this.getResultSet();
-        return completedQuests.size();
+        if(completedQuests != null) {
+            return completedQuests.size();
+        }
+        return 0;
     }
 
     /**

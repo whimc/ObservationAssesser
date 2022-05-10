@@ -27,6 +27,7 @@ public class DialoguePrompt {
         this.prompt = (String) entry.get("prompt");
 
         Map<String, Object> worlds = (Map<String, Object>) entry.get("worlds");
+
         for (String worldName : worlds.keySet()) {
             this.responses.put(worldName, (Map<String, String>) worlds.get(worldName));
         }
@@ -37,10 +38,11 @@ public class DialoguePrompt {
     }
 
     public String getResponses(World world, String key) {
-        if (!this.responses.containsKey(world.getName())) {
+        if (this.responses.containsKey(GLOBAL_FEEDBACK)){
             return this.responses.get(GLOBAL_FEEDBACK).get(key);
+        }else if (!this.responses.containsKey(world.getName())) {
+            return null;
         }
-
         return this.responses.get(world.getName()).get(key);
     }
 

@@ -18,6 +18,7 @@ import java.util.*;
 public class ProgressCommand implements CommandExecutor, TabCompleter {
 
     private final StudentFeedback plugin;
+    private final String COMMAND = "progress";
 
     /**
      * Constructor to set instance variable
@@ -48,15 +49,19 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
         if(sessionStart == null){
             return false;
         }
-        plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
-            ObservationAssessment obs = new ObservationAssessment(player, sessionStart,observations);
-            plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
-                ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
-                plugin.getQueryer().getSessionPositions(player,sessionStart, positions -> {
-                    ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
-                    QuestAssessment quest = new QuestAssessment(player, sessionStart, null);
-                    OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                    Utils.sendProgressFeedback(assessment);
+        this.plugin.getQueryer().storeNewProgressCommand(player, COMMAND, id -> {
+            plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
+                ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
+                plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
+                    ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
+                    plugin.getQueryer().getSessionPositions(player, sessionStart, positions -> {
+                        ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
+                        plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
+                            QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                            OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                            Utils.sendProgressFeedback(assessment);
+                        });
+                    });
                 });
             });
         });

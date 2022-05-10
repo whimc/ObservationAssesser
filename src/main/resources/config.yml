@@ -29,7 +29,7 @@ templates:
       position: 10
       name: '&aOverall Statistics'
       lore:
-        - '&fI can quickly grade how well you have been progressing on the server.'
+        - '&fI want to see my overall progress on the server.'
     prompts:
       - prompt: Observation Skills
         worlds:
@@ -46,12 +46,12 @@ templates:
       position: 12
       name: '&bSession Statistics'
       lore:
-        - '&fI can quickly grade how you are doing today on the server.'
+        - '&fI want to see my session progress on the server.'
     prompts:
       - prompt: Observations
         worlds:
           ALL:
-              feedback: Your observation score for today is {}. You should try some different observation types or look for some unique aspects of this planet.
+            feedback: Your observation score for today is {}. You should try some different observation types or look for some unique aspects of this planet.
       - prompt: Science Tools
         worlds:
           ALL:
@@ -68,7 +68,7 @@ templates:
       position: 14
       name: '&6Science Facts'
       lore:
-        - '&fI can discuss some science facts relevant to this world.'
+        - '&fI want discuss some science facts relevant to this world.'
     prompts:
       - prompt: tree
         worlds:
@@ -86,6 +86,22 @@ templates:
         worlds:
           NoMoon:
             feedback: Without the gravity of the moon the Earth rotates faster making it windier.
+      - prompt: temperature, cold, hot
+        worlds:
+          ColderSun_HabitableStrip:
+            feedback: The temperature is beautiful like this year round because the planet is tidally locked/always gets partial sun.
+          ColderSun_Cold:
+            feedback: The temperature is freezing year round because the planet is tidally locked/always faces away from the sun.
+          ColderSun_Hot:
+            feedback: The temperature is scorching this year round because the planet is tidally locked/always faces the sun.
+      - prompt: energy, power
+        worlds:
+          ColderSun_HabitableStrip:
+            feedback: Energy production could look similar to what we are doing currently on the our Earth.
+          ColderSun_Cold:
+            feedback: Even though there is no sunlight we could produce energy through other sources like geothermal.
+          ColderSun_Hot:
+            feedback: With this side always facing the sun, people would be smart to use solar energy.
       - prompt: default
         worlds:
           ALL:
