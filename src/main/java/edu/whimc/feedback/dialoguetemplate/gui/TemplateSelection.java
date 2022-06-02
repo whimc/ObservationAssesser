@@ -68,12 +68,15 @@ public class TemplateSelection implements Listener {
 
     public TemplateSelection(StudentFeedback plugin, SpigotCallback spigotCallback, Player player, DialogueTemplate template) {
         UUID uuid = player.getUniqueId();
+        this.plugin = plugin;
         if (ongoingSelections.containsKey(uuid)) {
-            ongoingSelections.get(uuid).destroySelection();
-            Utils.msg(player, "Lets start a new conversation!");
+            this.plugin.getQueryer().storeNewInteraction(ongoingSelections.get(uuid), id -> {
+                ongoingSelections.get(uuid).destroySelection();
+                Utils.msg(player, "Lets start a new conversation!");
+            });
         }
 
-        this.plugin = plugin;
+
         this.spigotCallback = spigotCallback;
         this.template = template;
         this.uuid = uuid;

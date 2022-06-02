@@ -4,6 +4,7 @@ description: ${project.description}
 author: Sam Hum
 api-version: 1.13
 main: edu.whimc.feedback.StudentFeedback
+softdepend: [ProtocolLib]
 commands:
   observationassesser:
     description: Assesses quality and structure of observation
