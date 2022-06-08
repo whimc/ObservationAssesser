@@ -7,8 +7,11 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -44,10 +47,23 @@ public class ExplorationAssessment extends ProgressAssessment{
             int min_x = plugin.getConfig().getInt("worlds."+world+".top_left_coordinate_x");
             int min_z = plugin.getConfig().getInt("worlds."+world+".top_left_coordinate_z");
             BufferedImage img = null;
+            File imageDirectory = new File(System.getProperty("user.dir")+"/plugins/maps");
             try {
-                img = ImageIO.read(new File(System.getProperty("user.dir")+"/plugins/maps/"+world+".png"));
+                img = ImageIO.read(new File(imageDirectory.getAbsolutePath()+"/"+world+".png"));
             } catch (Exception e) {
-                e.printStackTrace();
+                File[] matchingFiles = imageDirectory.listFiles(new FilenameFilter() {
+                    public boolean accept(File dir, String name) {
+                        String lowercaseFile = name.toLowerCase();
+                        String worldLowercase = world.toLowerCase();
+                        return lowercaseFile.contains(worldLowercase);
+                    }
+                });
+                try {
+                    img = ImageIO.read(matchingFiles[0]);
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                    return -1;
+                }
             }
             int max_x = min_x + img.getWidth() / pixelRatio;
             int max_z = min_z + img.getHeight() / pixelRatio;
