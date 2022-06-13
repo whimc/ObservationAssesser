@@ -196,7 +196,7 @@ public class Utils {
      * @param skills the students current skills
      */
     public static void sendOpenLearnerModel(Player player, List<Double> skills){
-        player.sendMessage("§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]");
+        //player.sendMessage("§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]");
         player.sendMessage("§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]");
         player.sendMessage("§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]");
         player.sendMessage("§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]");
@@ -209,7 +209,7 @@ public class Utils {
      */
     public static String getOpenLearnerModel(Player player, List<Double> skills){
         String bars = "";
-        bars += "§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]\n";
+        //bars += "§e§lAnalogy:      §8[§r" + Utils.getProgressBar(skills.get(0), 100, 40, '|', "§a", "§7") + "§8]\n";
         bars += "§e§lComparative: §8[§r" + Utils.getProgressBar(skills.get(1), 100, 40, '|', "§9", "§7") + "§8]\n";
         bars += "§e§lDescriptive:  §8[§r" + Utils.getProgressBar(skills.get(2), 100, 40, '|', "§6", "§7") + "§8]\n";
         bars += "§e§lInference:   §8[§r" + Utils.getProgressBar(skills.get(3), 100, 40, '|', "§d", "§7") + "§8]";

@@ -41,9 +41,9 @@ public class Skills {
         params[2][2] = .29;
 
         //Inference params
-        params[3][0] = .01;
+        params[3][0] = .29;
         params[3][1] = .1;
-        params[3][2] = .01;
+        params[3][2] = .13;
 
         List<Double> currentSkills = previousSkills;
         int skillType = -1;

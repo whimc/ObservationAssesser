@@ -29,7 +29,8 @@ templates:
       position: 10
       name: '&aOverall Statistics'
       lore:
-        - '&fI want to see my overall progress on the server.'
+        - '&fI want to see my overall'
+        - '&fprogress on the server.'
     prompts:
       - prompt: Observation Skills
         worlds:
@@ -46,7 +47,8 @@ templates:
       position: 12
       name: '&bSession Statistics'
       lore:
-        - '&fI want to see my session progress on the server.'
+        - '&fI want to see my session'
+        - '&fprogress on the server.'
     prompts:
       - prompt: Observations
         worlds:
@@ -68,7 +70,8 @@ templates:
       position: 14
       name: '&6Science Facts'
       lore:
-        - '&fI want discuss some science facts relevant to this world.'
+        - '&fI want discuss some science'
+        - '&ffacts relevant to this world.'
     prompts:
       - prompt: tree
         worlds:
