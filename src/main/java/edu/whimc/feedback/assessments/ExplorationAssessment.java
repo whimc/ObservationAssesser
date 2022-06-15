@@ -1,6 +1,7 @@
 package edu.whimc.feedback.assessments;
 
 import edu.whimc.feedback.StudentFeedback;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import javax.imageio.ImageIO;
@@ -9,10 +10,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.Buffer;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Class to define exploration assessment (copied from Path-Generator)
@@ -40,36 +43,28 @@ public class ExplorationAssessment extends ProgressAssessment{
     public double metric() {
         HashMap<String, ArrayList<Point>> positions = (HashMap<String, ArrayList<Point>>) this.getResultSet();
         int score = 0;
-        for(Map.Entry<String, ArrayList<Point>> entry : positions.entrySet()) {
+        for (Map.Entry<String, ArrayList<Point>> entry : positions.entrySet()) {
             String world = entry.getKey();
             ArrayList<Point> points = entry.getValue();
-            int pixelRatio = plugin.getConfig().getInt("worlds."+world+".pixel_to_block_ratio");
-            int min_x = plugin.getConfig().getInt("worlds."+world+".top_left_coordinate_x");
-            int min_z = plugin.getConfig().getInt("worlds."+world+".top_left_coordinate_z");
+            int pixelRatio = plugin.getConfig().getInt("worlds." + world + ".pixel_to_block_ratio");
+            int min_x = plugin.getConfig().getInt("worlds." + world + ".top_left_coordinate_x");
+            int min_z = plugin.getConfig().getInt("worlds." + world + ".top_left_coordinate_z");
             BufferedImage img = null;
-            File imageDirectory = new File(System.getProperty("user.dir")+File.separator + "plugins" + File.separator+ "maps");
-            File[] matchingFiles = imageDirectory.listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    String lowercaseFile = name.toLowerCase();
-                    String worldLowercase = world.toLowerCase();
-                    return lowercaseFile.contains(worldLowercase);
-                }
-            });
-
+            int max_x = 0;
+            int max_z = 0;
             try {
-                img = ImageIO.read(matchingFiles[0]);
-            } catch (Exception ioException) {
-                ioException.printStackTrace();
-                return -1;
+                img = ImageIO.read(this.getClass().getResource(File.separator + "maps" + File.separator + world + ".png"));
+                max_x = min_x + img.getWidth() / pixelRatio;
+                max_z = min_z + img.getHeight() / pixelRatio;
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
             }
-
-            int max_x = min_x + img.getWidth() / pixelRatio;
-            int max_z = min_z + img.getHeight() / pixelRatio;
             int[][] mapMatrices = new int[10][10];
-            for(int k = 0; k < points.size(); k++){
+            for (int k = 0; k < points.size(); k++) {
                 double x = points.get(k).getX();
                 double z = points.get(k).getX();
-                if(!is_inside_view(min_x,min_z,max_x,max_z,x,z)){
+                if (!is_inside_view(min_x, min_z, max_x, max_z, x, z)) {
                     continue;
                 }
                 int row = (int) scale(x, new int[]{min_x, max_x}, new int[]{0, 10});
@@ -77,16 +72,15 @@ public class ExplorationAssessment extends ProgressAssessment{
 
                 mapMatrices[row][col] = 1;
             }
-            for(int i = 0; i < mapMatrices.length; i++){
-                for(int k = 0; k < mapMatrices[i].length; k++){
-                    if(mapMatrices[i][k] == 1)
-                    score+= mapMatrices[i][k];
+            for (int i = 0; i < mapMatrices.length; i++) {
+                for (int k = 0; k < mapMatrices[i].length; k++) {
+                    if (mapMatrices[i][k] == 1)
+                        score += mapMatrices[i][k];
                 }
             }
         }
-
-        return score;
-    }
+            return score;
+        }
 
     /**
      * Determines if this coordinate is inside of the World's view
