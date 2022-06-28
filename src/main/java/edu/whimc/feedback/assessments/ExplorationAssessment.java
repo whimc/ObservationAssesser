@@ -8,14 +8,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.Buffer;
-import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Stream;
+
 
 /**
  * Class to define exploration assessment (copied from Path-Generator)
