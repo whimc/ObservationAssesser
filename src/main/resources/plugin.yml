@@ -6,9 +6,9 @@ api-version: 1.13
 main: edu.whimc.feedback.StudentFeedback
 softdepend: [ProtocolLib]
 commands:
-  observationassesser:
+  structureassessment:
     description: Assesses quality and structure of observation
-    usage: '/observationassesser [observation] [observation type]'
+    usage: '/structureassessment [observation] [observation type]'
   progress:
     description: Gives feedback on student progress during session
     usage: '/progress'

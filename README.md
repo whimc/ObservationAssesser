@@ -35,5 +35,5 @@ mysql:
 | `/progress`                                                 | Display student progress on interest measures during session                                                               |
 | `/leaderboard`                                              | Display leaderboard of averages of student interest measures during session                                                |
 | `/agentdialogue`                                            | Display dialogue prompts for agent (should be called by right clicking on agent and not directly invoked)                  |
-| `/observationassesser <observation> <type>`                 | Display progress bars for observation structure skills (should be called from Observations and not directly invoked)       |
+| `/structureassessment <observation> <type>`                 | Display progress bars for observation structure skills (should be called from Observations and not directly invoked)       |
 

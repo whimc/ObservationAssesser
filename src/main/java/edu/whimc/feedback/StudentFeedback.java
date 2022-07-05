@@ -54,13 +54,13 @@ public class StudentFeedback extends JavaPlugin implements Listener {
             // If we couldn't connect to the database disable the plugin
             if (q == null) {
                 this.getLogger().severe("Could not establish MySQL connection! Disabling plugin...");
-                getCommand("observationassesser").setExecutor(this);
+                getCommand("structureassessment").setExecutor(this);
                 getCommand("progress").setExecutor(this);
                 getCommand("leaderboard").setExecutor(this);
                 return;
             }
             });
-        getCommand("observationassesser").setExecutor(new AssessmentCommand(this));
+        getCommand("structureassessment").setExecutor(new AssessmentCommand(this));
 
 
         getCommand("progress").setExecutor(new ProgressCommand(this));
