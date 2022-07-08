@@ -1,13 +1,16 @@
 package edu.whimc.feedback;
 
 import edu.whimc.feedback.assessments.*;
-import edu.whimc.feedback.commands.AgentDialogueCommand;
-import edu.whimc.feedback.commands.AssessmentCommand;
 import edu.whimc.feedback.commands.LeaderboardCommand;
 import edu.whimc.feedback.commands.ProgressCommand;
 import edu.whimc.feedback.utils.Utils;
 import edu.whimc.feedback.utils.sql.Queryer;
+import edu.whimc.observations.models.Observation;
+import edu.whimc.observations.models.ObserveEvent;
+import edu.whimc.observations.observetemplate.models.ObservationTemplate;
+import edu.whimc.overworld_agent.Events.AgentDialogEvent;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,6 +21,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.List;
+
 import edu.whimc.feedback.dialoguetemplate.TemplateManager;
 import edu.whimc.feedback.dialoguetemplate.SignMenuFactory;
 
@@ -54,13 +59,11 @@ public class StudentFeedback extends JavaPlugin implements Listener {
             // If we couldn't connect to the database disable the plugin
             if (q == null) {
                 this.getLogger().severe("Could not establish MySQL connection! Disabling plugin...");
-                getCommand("structureassessment").setExecutor(this);
                 getCommand("progress").setExecutor(this);
                 getCommand("leaderboard").setExecutor(this);
                 return;
             }
             });
-        getCommand("structureassessment").setExecutor(new AssessmentCommand(this));
 
 
         getCommand("progress").setExecutor(new ProgressCommand(this));
@@ -68,7 +71,6 @@ public class StudentFeedback extends JavaPlugin implements Listener {
 
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
 
-        getCommand("agentdialogue").setExecutor(new AgentDialogueCommand(this));
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
     }
 
@@ -122,6 +124,58 @@ public class StudentFeedback extends JavaPlugin implements Listener {
 
     }
 
+    @EventHandler
+    public void onObservation(ObserveEvent observationEvent){
+        Player player = observationEvent.getPlayer();
+
+        //Need to preprocess lowercase and remove non alpha characters
+        Observation observation = observationEvent.getObservation();
+        String cleanedObservation = observation.getObservation();
+        cleanedObservation = ChatColor.stripColor(Utils.color(observation.getObservation()));
+        cleanedObservation = cleanedObservation.replaceAll("[^A-Za-z0-9\\s]", "");
+        cleanedObservation = cleanedObservation.toLowerCase();
+
+
+        String templateString;
+        StructureAssessment assessment;
+        ObservationTemplate template = observation.getTemplate();
+        if(template != null) {
+            templateString = template.getType().toString();
+        } else {
+            templateString = "null";
+        }
+        String worlds = this.getConfig().getString("agent-worlds");
+        if(worlds.contains(",")){
+            String[] agentWorlds = worlds.split(", ");
+            for(int k = 0; k < agentWorlds.length; k++){
+                String worldName = agentWorlds[k];
+                if(player.getWorld().getName().equalsIgnoreCase(worldName)){
+                    assessment = new StructureAssessment(cleanedObservation, templateString);
+                    assessment.predict();
+                    this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
+                        Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
+                        player.sendMessage(assessment.getFeedback());
+                    });
+                    break;
+                }
+            }
+        } else {
+            if(player.getWorld().getName().equalsIgnoreCase(worlds)){
+                assessment = new StructureAssessment(cleanedObservation, templateString);
+                assessment.predict();
+                this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
+                    Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
+                    player.sendMessage(assessment.getFeedback());
+                });
+            }
+        }
+    }
+
+    @EventHandler
+    public void onAgentDialog(AgentDialogEvent dialog){
+        Player player = dialog.getPlayer();
+        getTemplateManager().getGui().openTemplateInventory(player);
+    }
     public TemplateManager getTemplateManager(){
         return templateManager;
     }

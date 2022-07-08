@@ -56,6 +56,22 @@
             <version>4.7.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <artifactId>edu.whimc</artifactId>
+            <groupId>WHIMC-OverworldAgent</groupId>
+            <scope>system</scope>
+            <version>0.0.0</version>
+            <systemPath>${basedir}/lib/WHIMC-OverworldAgent-0.0.0.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <artifactId>edu.whimc</artifactId>
+            <groupId>WHIMC-Observations</groupId>
+            <scope>system</scope>
+            <version>2.5.0</version>
+            <systemPath>${basedir}/lib/WHIMC-Observations-2.5.0.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -166,7 +166,9 @@ public class TemplateSelection implements Listener {
                                         }
                                     }
                                 }
-                                doStage(TemplateSelectionStage.SELECT_RESPONSE);
+                                this.plugin.getQueryer().storeNewScienceInquiry(player, response, id -> {
+                                    doStage(TemplateSelectionStage.SELECT_RESPONSE);
+                                });
                                 return true;
                             })
                             .open(p)

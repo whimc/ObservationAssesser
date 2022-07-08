@@ -5,16 +5,11 @@ author: Sam Hum
 api-version: 1.13
 main: edu.whimc.feedback.StudentFeedback
 softdepend: [ProtocolLib]
+depende: [WHIMC-Observations, WHIMC-OverworldAgent]
 commands:
-  structureassessment:
-    description: Assesses quality and structure of observation
-    usage: '/structureassessment [observation] [observation type]'
   progress:
     description: Gives feedback on student progress during session
     usage: '/progress'
   leaderboard:
     description: Displays order of current players on server
     usage: '/leaderboard'
-  agentdialogue:
-    description: Displays dialogue with agent
-    usage: '/agentdialogue'

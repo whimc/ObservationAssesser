@@ -42,6 +42,6 @@ public class ObservationAssessment extends ProgressAssessment{
      */
     @Override
     public String getName() {
-        return "ObservationAssessment";
+        return "Observation Assessment";
     }
 }

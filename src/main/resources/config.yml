@@ -5,6 +5,8 @@ mysql:
   username: user
   password: pass
 
+agent-worlds: Trappist, Kepler, Cancri, Gliese, BrownDwarf
+
 template-gui:
   text:
     write-your-own-response: "Write your own response"

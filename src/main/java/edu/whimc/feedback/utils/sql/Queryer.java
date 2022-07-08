@@ -85,6 +85,14 @@ public class Queryer {
                     "(uuid, username, world, time, command) " +
                     "VALUES (?, ?, ?, ?, ?)";
 
+    /**
+     * Query for inserting a progress entry into the database.
+     */
+    private static final String QUERY_SAVE_SCIENCE_INQUIRY =
+            "INSERT INTO whimc_dialog_science " +
+                    "(uuid, username, world, time, science_inquiry) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
     private final StudentFeedback plugin;
     private final MySQLConnection sqlConnection;
 
@@ -484,6 +492,53 @@ public class Queryer {
         });
     }
 
+    /**
+     * Generated a PreparedStatement for saving a new progress session.
+     * @param connection MySQL Connection
+     * @param player Checking progress or leaderboard to save
+     * @param inquiry Command progress or leaderboard to save
+     * @return PreparedStatement
+     * @throws SQLException
+     */
+    private PreparedStatement insertScienceInquiry(Connection connection, Player player, String inquiry) throws SQLException {
+        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_SCIENCE_INQUIRY, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, player.getUniqueId().toString());
+        statement.setString(2, player.getName());
+        statement.setString(3, player.getWorld().getName());
+        statement.setLong(4, System.currentTimeMillis());
+        statement.setString(5, inquiry);
+        return statement;
+    }
+
+    /**
+     * Stores a progress command into the database and returns the obervation's ID
+     * @param player Checking progress or leaderboard to save
+     * @param inquiry Command progress or leaderboard to save
+     * @param callback    Function to call once the observation has been saved
+     */
+    public void storeNewScienceInquiry(Player player, String inquiry, Consumer<Integer> callback) {
+        async(() -> {
+            Utils.debug("Storing inquiry to database:");
+
+            try (Connection connection = this.sqlConnection.getConnection()) {
+                try (PreparedStatement statement = insertScienceInquiry(connection, player, inquiry)) {
+                    String query = statement.toString().substring(statement.toString().indexOf(" ") + 1);
+                    Utils.debug("  " + query);
+                    statement.executeUpdate();
+
+                    try (ResultSet idRes = statement.getGeneratedKeys()) {
+                        idRes.next();
+                        int id = idRes.getInt(1);
+
+                        Utils.debug("Command saved with id " + id + ".");
+                        sync(callback, id);
+                    }
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
     private <T> void sync(Consumer<T> cons, T val) {
         Bukkit.getScheduler().runTask(this.plugin, () -> cons.accept(val));

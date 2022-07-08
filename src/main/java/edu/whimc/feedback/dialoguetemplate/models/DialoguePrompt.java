@@ -46,9 +46,5 @@ public class DialoguePrompt {
         return this.responses.get(world.getName()).get(key);
     }
 
-    public int getNumberOfFillIns(World world) {
-        String temp = getResponses(world, "feedback").replace(FILLIN, "");
-        return (this.prompt.length() - temp.length()) / FILLIN.length();
-    }
 
 }
