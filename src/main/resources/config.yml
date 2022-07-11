@@ -5,7 +5,7 @@ mysql:
   username: user
   password: pass
 
-agent-worlds: Trappist, Kepler, Cancri, Gliese, BrownDwarf
+agent-worlds: Trappist, Kepler, Cancri, Cancri_Cold, Gliese, BrownDwarf
 
 template-gui:
   text:
@@ -107,10 +107,58 @@ templates:
             feedback: Even though there is no sunlight we could produce energy through other sources like geothermal.
           ColderSun_Hot:
             feedback: With this side always facing the sun, people would be smart to use solar energy.
+      - prompt: ice, fire
+        worlds:
+          Gliese:
+            feedback: The high pressure at the core of Gliese 436b keeps the ice solid even at high temperatures and is "on fire" due to exothermic reactions.
+      - prompt: planet
+        worlds:
+          Gliese:
+            feedback: Gliese 436b is a gas giant exoplanet outside our solar system that orbits the red dwarf Gliese 436.
+          Trappist:
+            feedback: Trappist 1e is an exoplant that orbits Trappist 1.
+          Kepler:
+            feedback: Kepler 186f is a super Earth exoplanet that orbits a M-type star Kepler 186.
+          Cancri:
+            feedback: Cancri is a super Earth that orbits an ultra-cool dwarf star.
+          Cancri_Cold:
+            feedback: Cancri is a super Earth that orbits an ultra-cool dwarf star.
+          BrownDwarf:
+            feedback: Brown Dwarf CWW 89Ab is a "failed star". It is most like a gas giant.
+      - prompt: tidally, locked, lava, cold, hot, temperature
+        worlds:
+          Cancri:
+            feedback: Cancri is tidally locked. This side is always facing the star and the heat can melt rocks.
+          Cancri_Cold:
+            feedback: Cancri is tidally locked. This side is always facing away from the star and creates a solid area to explore.
+      - prompt: sky, cloud
+        worlds:
+          Cancri_Cold:
+            feedback: On Cancri's cold side the atmosphere is cold enough to freeze materials like silicon in the sky causing glowing clouds.
+      - prompt: water
+        worlds:
+          Trappist:
+            feedback: The water on Trappist is toxic because of the volcanic and bacterial impact of the geothermic composition which is similar to water in Yellowstone.
+      - prompt: red, color
+        worlds:
+          Kepler:
+            feedback: The plants are red on Kepler because of the different atmospheric composition that filters out certain ranges of light.
+      - prompt: atmosphere
+        worlds:
+          Trappist:
+            feedback: The atmosphere composition in the air and water on Trappist is different from Earth, try measuring them using science tools either inside or outside a pond.
+          Kepler:
+            feedback: The atmosphere composition on Kepler is different than on Earth. It filters oout certain lights which cause the plants to grow in a red color, try measuring it with science tools.
+          BrownDwarf:
+            feedback: The carbon to oxygen ratio is crucial to determine whether this is a gas giant or Brown Dwarf.
+      - prompt: gravity, atmosphere, temperature, pressure, radius
+        worlds:
+          Gliese:
+            feedback: This concept is different on Gliese 436b, try using the science tools for this concept and think about how this could effect the surroundings.
       - prompt: default
         worlds:
           ALL:
-            feedback: Sorry, I am don't think that is an important feature on this planet.
+            feedback: Hmm, I am not sure about this. You should ask an instructor if this is an important feature.
 
 
 
@@ -205,6 +253,12 @@ worlds:
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -21
     top_left_coordinate_z: -28
+
+  Cancri_Cold:
+    display_name: Cancri Cold
+    pixel_to_block_ratio: 4
+    top_left_coordinate_x: -100
+    top_left_coordinate_z: -100
 
   Gliese:
     display_name: Gliese

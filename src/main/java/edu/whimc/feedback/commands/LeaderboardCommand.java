@@ -3,6 +3,7 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import edu.whimc.feedback.utils.Utils;
+import edu.whimc.overworld_agent.OverworldAgent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,6 +25,7 @@ import java.util.function.Consumer;
 public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
     private StudentFeedback plugin;
     private final String COMMAND = "leaderboard";
+    public static final String LEADERBOARD_PERM = OverworldAgent.PERM_PREFIX + ".leaderboard";
     /**
      * Constructor to set instance variable
      * @param plugin the StudentFeedback plugin instance
@@ -44,6 +46,11 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (!(commandSender instanceof Player)) {
             Utils.msg(commandSender, ChatColor.RED + "You must be a player!");
+            return true;
+        }
+        if (!commandSender.hasPermission(LEADERBOARD_PERM)) {
+            commandSender.sendMessage(
+                    "You do not have the required permission!");
             return true;
         }
         Player sender = (Player) commandSender;

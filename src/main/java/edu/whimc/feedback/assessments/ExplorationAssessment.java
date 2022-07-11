@@ -51,7 +51,7 @@ public class ExplorationAssessment extends ProgressAssessment{
                 max_x = min_x + img.getWidth() / pixelRatio;
                 max_z = min_z + img.getHeight() / pixelRatio;
             } catch (Exception e) {
-                e.printStackTrace();
+                Bukkit.getServer().getConsoleSender().sendMessage(world+" does not exist in images folder!");
                 continue;
             }
             int[][] mapMatrices = new int[10][10];

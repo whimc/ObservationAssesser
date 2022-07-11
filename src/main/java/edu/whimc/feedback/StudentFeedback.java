@@ -18,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -36,6 +37,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     private HashMap<Player,Long> sessions;
     private TemplateManager templateManager;
     private SignMenuFactory signMenuFactory;
+    public static final String PERM_PREFIX = "whimc-feedback";
     /**
      * Method to return instance of plugin
      * @return instance of StudentFeedback plugin
@@ -51,7 +53,10 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         sessions = new HashMap<>();
-        System.currentTimeMillis();
+
+        Permission parent = new Permission(PERM_PREFIX + ".*");
+        Bukkit.getPluginManager().addPermission(parent);
+
         this.templateManager = new TemplateManager(this);
         this.signMenuFactory = new SignMenuFactory(this);
         StudentFeedback.instance = this;
@@ -142,7 +147,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
         if(template != null) {
             templateString = template.getType().toString();
         } else {
-            templateString = "null";
+            templateString = null;
         }
         String worlds = this.getConfig().getString("agent-worlds");
         if(worlds.contains(",")){

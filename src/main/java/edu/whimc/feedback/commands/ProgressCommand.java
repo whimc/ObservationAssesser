@@ -3,6 +3,7 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import edu.whimc.feedback.utils.Utils;
+import edu.whimc.overworld_agent.OverworldAgent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,6 +20,7 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
 
     private final StudentFeedback plugin;
     private final String COMMAND = "progress";
+    public static final String PROGRESS_PERM = OverworldAgent.PERM_PREFIX + ".progress";
 
     /**
      * Constructor to set instance variable
@@ -40,6 +42,11 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (!(commandSender instanceof Player)) {
             Utils.msg(commandSender, ChatColor.RED + "You must be a player!");
+            return true;
+        }
+        if (!commandSender.hasPermission(PROGRESS_PERM)) {
+            commandSender.sendMessage(
+                    "You do not have the required permission!");
             return true;
         }
         Player player = (Player) commandSender;
