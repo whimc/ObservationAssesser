@@ -8,7 +8,6 @@ import edu.whimc.feedback.utils.sql.Queryer;
 import edu.whimc.observations.models.Observation;
 import edu.whimc.observations.models.ObserveEvent;
 import edu.whimc.observations.observetemplate.models.ObservationTemplate;
-import edu.whimc.overworld_agent.Events.AgentDialogEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -20,12 +19,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.util.HashMap;
 import java.util.List;
 
-import edu.whimc.feedback.dialoguetemplate.TemplateManager;
-import edu.whimc.feedback.dialoguetemplate.SignMenuFactory;
 
 /**
  * Class to create plugin and enable it in MC
@@ -35,8 +31,7 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     private static StudentFeedback instance;
     private Queryer queryer;
     private HashMap<Player,Long> sessions;
-    private TemplateManager templateManager;
-    private SignMenuFactory signMenuFactory;
+    private Boolean database;
     public static final String PERM_PREFIX = "whimc-feedback";
     /**
      * Method to return instance of plugin
@@ -53,12 +48,10 @@ public class StudentFeedback extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         sessions = new HashMap<>();
-
+        database = this.getConfig().getBoolean("database");
         Permission parent = new Permission(PERM_PREFIX + ".*");
         Bukkit.getPluginManager().addPermission(parent);
 
-        this.templateManager = new TemplateManager(this);
-        this.signMenuFactory = new SignMenuFactory(this);
         StudentFeedback.instance = this;
         this.queryer = new Queryer(this, q -> {
             // If we couldn't connect to the database disable the plugin
@@ -68,15 +61,17 @@ public class StudentFeedback extends JavaPlugin implements Listener {
                 getCommand("leaderboard").setExecutor(this);
                 return;
             }
+
+
             });
 
 
         getCommand("progress").setExecutor(new ProgressCommand(this));
 
-
         getCommand("leaderboard").setExecutor(new LeaderboardCommand(this));
 
         Bukkit.getServer().getPluginManager().registerEvents(this, this);
+
     }
 
     /**
@@ -106,29 +101,31 @@ public class StudentFeedback extends JavaPlugin implements Listener {
      * When players leave their progress is saved to db and they are removed from sessions
      * @param event PlayerQuitEvent
      */
+    /**
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
         Player player = event.getPlayer();
         Long sessionStart = sessions.get(player);
-        queryer.getSessionObservations(player, sessionStart, observations -> {
-            ObservationAssessment obs = new ObservationAssessment(player, sessionStart,observations);
-            queryer.getSessionScienceTools(player, sessionStart, scienceTools -> {
-                ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
-                queryer.getSessionPositions(player,sessionStart, positions -> {
-                    ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, this);
-                    queryer.getQuestsCompleted(player, completedQuests -> {
-                        QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
-                        OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                        queryer.storeNewProgress(assessment, rowID -> {
-                            sessions.remove(event.getPlayer());
+        if(database) {
+            queryer.getSessionObservations(player, sessionStart, observations -> {
+                ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
+                queryer.getSessionScienceTools(player, sessionStart, scienceTools -> {
+                    ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
+                    queryer.getSessionPositions(player, sessionStart, positions -> {
+                        ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, this);
+                        queryer.getQuestsCompleted(player, completedQuests -> {
+                            QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                            OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                            queryer.storeNewProgress(assessment, rowID -> {
+                                sessions.remove(event.getPlayer());
+                            });
                         });
                     });
                 });
             });
-        });
-
+        }
     }
-
+*/
     @EventHandler
     public void onObservation(ObserveEvent observationEvent){
         Player player = observationEvent.getPlayer();
@@ -154,36 +151,38 @@ public class StudentFeedback extends JavaPlugin implements Listener {
             String[] agentWorlds = worlds.split(", ");
             for(int k = 0; k < agentWorlds.length; k++){
                 String worldName = agentWorlds[k];
-                if(player.getWorld().getName().equalsIgnoreCase(worldName)){
+                if(player.getWorld().getName().equalsIgnoreCase(worldName)) {
                     assessment = new StructureAssessment(cleanedObservation, templateString);
                     assessment.predict();
-                    this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
-                        Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
-                        player.sendMessage(assessment.getFeedback());
-                    });
-                    break;
+                    if (database) {
+                        StructureAssessment finalAssessment = assessment;
+                        this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
+                            Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
+                            player.sendMessage(finalAssessment.getFeedback());
+                        });
+                        break;
+                    }
                 }
             }
         } else {
-            if(player.getWorld().getName().equalsIgnoreCase(worlds)){
+            if(player.getWorld().getName().equalsIgnoreCase(worlds)) {
                 assessment = new StructureAssessment(cleanedObservation, templateString);
                 assessment.predict();
-                this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
-                    Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
-                    player.sendMessage(assessment.getFeedback());
-                });
+                if (database) {
+                    StructureAssessment finalAssessment1 = assessment;
+                    this.getQueryer().updateSkills(player, templateString, assessment.getCorrect(), currentSkills -> {
+                        Utils.sendOpenLearnerModel(player, (List<Double>) currentSkills);
+                        player.sendMessage(finalAssessment1.getFeedback());
+                    });
+                }
             }
         }
     }
 
-    @EventHandler
-    public void onAgentDialog(AgentDialogEvent dialog){
-        Player player = dialog.getPlayer();
-        getTemplateManager().getGui().openTemplateInventory(player);
+    public Boolean getDatabase() {
+        return database;
     }
-    public TemplateManager getTemplateManager(){
-        return templateManager;
-    }
+
     /**
      * Display when plugin cannot be enabled
      * @param sender
@@ -199,7 +198,4 @@ public class StudentFeedback extends JavaPlugin implements Listener {
         return true;
     }
 
-    public SignMenuFactory getSignMenuFactory() {
-        return signMenuFactory;
-    }
 }

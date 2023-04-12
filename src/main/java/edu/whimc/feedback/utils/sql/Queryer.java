@@ -4,8 +4,8 @@ import edu.whimc.feedback.StudentFeedback;
 
 import edu.whimc.feedback.assessments.OverallAssessment;
 import edu.whimc.feedback.bkt.Skills;
-import edu.whimc.feedback.dialoguetemplate.gui.TemplateSelection;
 import edu.whimc.feedback.utils.Utils;
+import edu.whimc.feedback.utils.sql.MySQLConnection;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -72,26 +72,11 @@ public class Queryer {
     /**
      * Query for inserting a progress entry into the database.
      */
-    private static final String QUERY_SAVE_INTERACTION =
-            "INSERT INTO whimc_dialogue " +
-                    "(uuid, username, world, time, overall_observation, quests, session_observation, science_tools, exploration_metric, science_topics) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    /**
-     * Query for inserting a progress entry into the database.
-     */
     private static final String QUERY_SAVE_PROGRESS_COMMANDS =
             "INSERT INTO whimc_progress_commands " +
                     "(uuid, username, world, time, command) " +
                     "VALUES (?, ?, ?, ?, ?)";
 
-    /**
-     * Query for inserting a progress entry into the database.
-     */
-    private static final String QUERY_SAVE_SCIENCE_INQUIRY =
-            "INSERT INTO whimc_dialog_science " +
-                    "(uuid, username, world, time, science_inquiry) " +
-                    "VALUES (?, ?, ?, ?, ?)";
 
     private final StudentFeedback plugin;
     private final MySQLConnection sqlConnection;
@@ -393,56 +378,6 @@ public class Queryer {
         });
     }
 
-    /**
-     * Generated a PreparedStatement for saving a new progress session.
-     * @param connection MySQL Connection
-     * @param dialogue Interaction to save
-     * @return PreparedStatement
-     * @throws SQLException
-     */
-    private PreparedStatement insertInteraction(Connection connection, TemplateSelection dialogue) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_INTERACTION, Statement.RETURN_GENERATED_KEYS);
-        statement.setString(1, dialogue.getPlayer().getUniqueId().toString());
-        statement.setString(2, dialogue.getPlayer().getName());
-        statement.setString(3, dialogue.getPlayer().getWorld().getName());
-        statement.setDouble(4, dialogue.getInteractionStart());
-        statement.setDouble(5, dialogue.getInteraction()[0]);
-        statement.setDouble(6, dialogue.getInteraction()[1]);
-        statement.setDouble(7, dialogue.getInteraction()[2]);
-        statement.setDouble(8, dialogue.getInteraction()[3]);
-        statement.setDouble(9, dialogue.getInteraction()[4]);
-        statement.setDouble(10, dialogue.getInteraction()[5]);
-        return statement;
-    }
-
-    /**
-     * Stores an interactioon into the database and returns the ID
-     * @param dialogue Dialogue interactions to save
-     * @param callback    Function to call once the observation has been saved
-     */
-    public void storeNewInteraction(TemplateSelection dialogue, Consumer<Integer> callback) {
-        async(() -> {
-            Utils.debug("Storing interaction to database:");
-
-            try (Connection connection = this.sqlConnection.getConnection()) {
-                try (PreparedStatement statement = insertInteraction(connection, dialogue)) {
-                    String query = statement.toString().substring(statement.toString().indexOf(" ") + 1);
-                    Utils.debug("  " + query);
-                    statement.executeUpdate();
-
-                    try (ResultSet idRes = statement.getGeneratedKeys()) {
-                        idRes.next();
-                        int id = idRes.getInt(1);
-
-                        Utils.debug("Interaction saved with id " + id + ".");
-                        sync(callback, id);
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
     /**
      * Generated a PreparedStatement for saving a new progress session.
@@ -492,53 +427,7 @@ public class Queryer {
         });
     }
 
-    /**
-     * Generated a PreparedStatement for saving a new progress session.
-     * @param connection MySQL Connection
-     * @param player Checking progress or leaderboard to save
-     * @param inquiry Command progress or leaderboard to save
-     * @return PreparedStatement
-     * @throws SQLException
-     */
-    private PreparedStatement insertScienceInquiry(Connection connection, Player player, String inquiry) throws SQLException {
-        PreparedStatement statement = connection.prepareStatement(QUERY_SAVE_SCIENCE_INQUIRY, Statement.RETURN_GENERATED_KEYS);
-        statement.setString(1, player.getUniqueId().toString());
-        statement.setString(2, player.getName());
-        statement.setString(3, player.getWorld().getName());
-        statement.setLong(4, System.currentTimeMillis());
-        statement.setString(5, inquiry);
-        return statement;
-    }
 
-    /**
-     * Stores a progress command into the database and returns the obervation's ID
-     * @param player Checking progress or leaderboard to save
-     * @param inquiry Command progress or leaderboard to save
-     * @param callback    Function to call once the observation has been saved
-     */
-    public void storeNewScienceInquiry(Player player, String inquiry, Consumer<Integer> callback) {
-        async(() -> {
-            Utils.debug("Storing inquiry to database:");
-
-            try (Connection connection = this.sqlConnection.getConnection()) {
-                try (PreparedStatement statement = insertScienceInquiry(connection, player, inquiry)) {
-                    String query = statement.toString().substring(statement.toString().indexOf(" ") + 1);
-                    Utils.debug("  " + query);
-                    statement.executeUpdate();
-
-                    try (ResultSet idRes = statement.getGeneratedKeys()) {
-                        idRes.next();
-                        int id = idRes.getInt(1);
-
-                        Utils.debug("Command saved with id " + id + ".");
-                        sync(callback, id);
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 
     private <T> void sync(Consumer<T> cons, T val) {
         Bukkit.getScheduler().runTask(this.plugin, () -> cons.accept(val));

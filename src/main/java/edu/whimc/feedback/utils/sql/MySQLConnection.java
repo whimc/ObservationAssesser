@@ -24,27 +24,18 @@ public class MySQLConnection {
 
     private final StudentFeedback plugin;
 
-    /**
-     * Constructor to set SQL info from config
-     * @param plugin StudentFeedback plugin instance
-     */
     public MySQLConnection(StudentFeedback plugin) {
-
         this.host = plugin.getConfig().getString("mysql.host");
         this.port = plugin.getConfig().getInt("mysql.port");
         this.database = plugin.getConfig().getString("mysql.database");
         this.username = plugin.getConfig().getString("mysql.username");
         this.password = plugin.getConfig().getString("mysql.password");
 
-
         this.url = String.format(URL_TEMPLATE, this.host, this.port, this.database);
+
         this.plugin = plugin;
     }
 
-    /**
-     * Initializes SQLConnection with schemamanager
-     * @return boolean for sqlconnection status
-     */
     public boolean initialize() {
         if (getConnection() == null) {
             return false;
@@ -54,10 +45,6 @@ public class MySQLConnection {
         return manager.initialize();
     }
 
-    /**
-     * Get SQL connection
-     * @return SQL connection
-     */
     public Connection getConnection() {
         try {
             if (this.connection != null && !this.connection.isClosed()) {
@@ -65,7 +52,6 @@ public class MySQLConnection {
             }
             this.connection = DriverManager.getConnection(this.url, this.username, this.password);
         } catch (SQLException ignored) {
-            ignored.printStackTrace();
             return null;
         }
 

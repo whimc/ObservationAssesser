@@ -3,7 +3,6 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import edu.whimc.feedback.utils.Utils;
-import edu.whimc.overworld_agent.OverworldAgent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -25,7 +24,7 @@ import java.util.function.Consumer;
 public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
     private StudentFeedback plugin;
     private final String COMMAND = "leaderboard";
-    public static final String LEADERBOARD_PERM = OverworldAgent.PERM_PREFIX + ".leaderboard";
+    public static final String LEADERBOARD_PERM = StudentFeedback.PERM_PREFIX + ".leaderboard";
     /**
      * Constructor to set instance variable
      * @param plugin the StudentFeedback plugin instance
@@ -55,11 +54,13 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
         }
         Player sender = (Player) commandSender;
         HashMap<Player,Long> sessions = plugin.getPlayerSessions();
-        this.plugin.getQueryer().storeNewProgressCommand(sender, COMMAND, id -> {
-            this.getSortedLeaderboard(sessions, sorted -> {
-                Utils.sendLeaderboardFeedback(sender, (ArrayList<OverallAssessment>) sorted);
+        if(plugin.getDatabase()) {
+            this.plugin.getQueryer().storeNewProgressCommand(sender, COMMAND, id -> {
+                this.getSortedLeaderboard(sessions, sorted -> {
+                    Utils.sendLeaderboardFeedback(sender, (ArrayList<OverallAssessment>) sorted);
+                });
             });
-        });
+        }
         return true;
     }
 
@@ -69,35 +70,37 @@ public class LeaderboardCommand  implements CommandExecutor, TabCompleter {
      * @param callback the callback
      */
     public void getSortedLeaderboard(HashMap<Player, Long> sessions, Consumer callback){
-        async(() -> {
-            ArrayList<OverallAssessment> scores = new ArrayList<>();
-            AtomicInteger ctr = new AtomicInteger();
-            for(Map.Entry<Player, Long> entry : sessions.entrySet()) {
-                Player player = entry.getKey();
-                Long sessionStart = entry.getValue();
+        if(plugin.getDatabase()) {
+            async(() -> {
+                ArrayList<OverallAssessment> scores = new ArrayList<>();
+                AtomicInteger ctr = new AtomicInteger();
+                for (Map.Entry<Player, Long> entry : sessions.entrySet()) {
+                    Player player = entry.getKey();
+                    Long sessionStart = entry.getValue();
 
-            plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
-                ObservationAssessment obs = new ObservationAssessment(player, sessionStart,observations);
-                plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
-                    ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
-                    plugin.getQueryer().getSessionPositions(player,sessionStart, positions -> {
-                        ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
-                        plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
-                            QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
-                            OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                            scores.add(assessment);
-                            ctr.getAndIncrement();
-                            if (ctr.get() == sessions.keySet().size()) {
-                                scores.sort(new AssessmentComparator());
-                                sync(callback, scores);
-                            }
+                    plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
+                        ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
+                        plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
+                            ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
+                            plugin.getQueryer().getSessionPositions(player, sessionStart, positions -> {
+                                ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
+                                plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
+                                    QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                                    OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                                    scores.add(assessment);
+                                    ctr.getAndIncrement();
+                                    if (ctr.get() == sessions.keySet().size()) {
+                                        scores.sort(new AssessmentComparator());
+                                        sync(callback, scores);
+                                    }
+                                });
+                            });
                         });
                     });
-                });
-            });
-            }
+                }
 
-        });
+            });
+        }
     }
 
     private <T> void sync(Consumer<T> cons, T val) {

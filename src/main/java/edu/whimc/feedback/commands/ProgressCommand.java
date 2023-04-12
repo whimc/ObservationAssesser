@@ -3,7 +3,6 @@ package edu.whimc.feedback.commands;
 import edu.whimc.feedback.StudentFeedback;
 import edu.whimc.feedback.assessments.*;
 import edu.whimc.feedback.utils.Utils;
-import edu.whimc.overworld_agent.OverworldAgent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -20,7 +19,7 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
 
     private final StudentFeedback plugin;
     private final String COMMAND = "progress";
-    public static final String PROGRESS_PERM = OverworldAgent.PERM_PREFIX + ".progress";
+    public static final String PROGRESS_PERM = StudentFeedback.PERM_PREFIX + ".progress";
 
     /**
      * Constructor to set instance variable
@@ -56,22 +55,24 @@ public class ProgressCommand implements CommandExecutor, TabCompleter {
         if(sessionStart == null){
             return false;
         }
-        this.plugin.getQueryer().storeNewProgressCommand(player, COMMAND, id -> {
-            plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
-                ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
-                plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
-                    ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
-                    plugin.getQueryer().getSessionPositions(player, sessionStart, positions -> {
-                        ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
-                        plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
-                            QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
-                            OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
-                            Utils.sendProgressFeedback(assessment);
+        if(plugin.getDatabase()) {
+            this.plugin.getQueryer().storeNewProgressCommand(player, COMMAND, id -> {
+                plugin.getQueryer().getSessionObservations(player, sessionStart, observations -> {
+                    ObservationAssessment obs = new ObservationAssessment(player, sessionStart, observations);
+                    plugin.getQueryer().getSessionScienceTools(player, sessionStart, scienceTools -> {
+                        ScienceToolsAssessment sci = new ScienceToolsAssessment(player, sessionStart, scienceTools);
+                        plugin.getQueryer().getSessionPositions(player, sessionStart, positions -> {
+                            ExplorationAssessment exp = new ExplorationAssessment(player, sessionStart, positions, plugin);
+                            plugin.getQueryer().getQuestsCompleted(player, completedQuests -> {
+                                QuestAssessment quest = new QuestAssessment(player, sessionStart, completedQuests);
+                                OverallAssessment assessment = new OverallAssessment(player, sessionStart, null, obs, sci, exp, quest);
+                                Utils.sendProgressFeedback(assessment);
+                            });
                         });
                     });
                 });
             });
-        });
+        }
         return true;
     }
 

@@ -1,166 +1,12 @@
 mysql:
-  host: localhost
+  host: 107.6.189.58
   port: 3306
-  database: minecraft
-  username: user
-  password: pass
+  database: mc115627?useSSL=false
+  username: mc115627
+  password: 56c1ccbd9a
 
-agent-worlds: Trappist, Kepler, Cancri, Cancri_Cold, Gliese, BrownDwarf
-
-template-gui:
-  text:
-    write-your-own-response: "Write your own response"
-    custom-response-sign-header: "&f&nScience topic"
-    uncategorized-sign-header: "&f&nYour Response"
-  filler-item: white_stained_glass_pane
-  inventory-name: "&lTopics"
-  rows: 4
-  cancel:
-    enabled: true
-    item: barrier
-    position: 27
-    name: "&cCancel"
-    lore:
-      - "&7Cancel our dialogue"
-
-templates:
-  OVERALL:
-    gui:
-      enabled: true
-      item: green_concrete
-      position: 10
-      name: '&aOverall Statistics'
-      lore:
-        - '&fI want to see my overall'
-        - '&fprogress on the server.'
-    prompts:
-      - prompt: Observation Skills
-        worlds:
-          ALL:
-            feedback: I made a graphic of your progress on observation structure\n
-      - prompt: Quests
-        worlds:
-          ALL:
-            feedback: So far you have completed {} quests.
-  SESSION:
-    gui:
-      enabled: true
-      item: blue_concrete
-      position: 12
-      name: '&bSession Statistics'
-      lore:
-        - '&fI want to see my session'
-        - '&fprogress on the server.'
-    prompts:
-      - prompt: Observations
-        worlds:
-          ALL:
-            feedback: Your observation score for today is {}. You should try some different observation types or look for some unique aspects of this planet.
-      - prompt: Science Tools
-        worlds:
-          ALL:
-            feedback: Your science tool score for today is {}. You should try some different science tools to see how this planet is different from Earth.
-      - prompt: Exploration
-        worlds:
-          ALL:
-            feedback: Your exploration score for today is {}. You should try exploraing different areas of the world to find some unique aspects of this planet.
-
-  SCIENCE:
-    gui:
-      enabled: true
-      item: orange_concrete
-      position: 14
-      name: '&6Science Facts'
-      lore:
-        - '&fI want discuss some science'
-        - '&ffacts relevant to this world.'
-    prompts:
-      - prompt: tree
-        worlds:
-          NoMoon:
-            feedback: The trees are short and squat due to the extreme wind as a result of having no moon.
-      - prompt: moon
-        worlds:
-          NoMoon:
-            feedback: There is no moon on this hypothetical world, try measuring the wind to see how this effects the Earth.
-      - prompt: tide
-        worlds:
-          NoMoon:
-            feedback: Without the gravity of the moon the tides are a lot smaller than they are currently.
-      - prompt: airflow, wind
-        worlds:
-          NoMoon:
-            feedback: Without the gravity of the moon the Earth rotates faster making it windier.
-      - prompt: temperature, cold, hot
-        worlds:
-          ColderSun_HabitableStrip:
-            feedback: The temperature is beautiful like this year round because the planet is tidally locked/always gets partial sun.
-          ColderSun_Cold:
-            feedback: The temperature is freezing year round because the planet is tidally locked/always faces away from the sun.
-          ColderSun_Hot:
-            feedback: The temperature is scorching this year round because the planet is tidally locked/always faces the sun.
-      - prompt: energy, power
-        worlds:
-          ColderSun_HabitableStrip:
-            feedback: Energy production could look similar to what we are doing currently on the our Earth.
-          ColderSun_Cold:
-            feedback: Even though there is no sunlight we could produce energy through other sources like geothermal.
-          ColderSun_Hot:
-            feedback: With this side always facing the sun, people would be smart to use solar energy.
-      - prompt: ice, fire
-        worlds:
-          Gliese:
-            feedback: The high pressure at the core of Gliese 436b keeps the ice solid even at high temperatures and is "on fire" due to exothermic reactions.
-      - prompt: planet
-        worlds:
-          Gliese:
-            feedback: Gliese 436b is a gas giant exoplanet outside our solar system that orbits the red dwarf Gliese 436.
-          Trappist:
-            feedback: Trappist 1e is an exoplant that orbits Trappist 1.
-          Kepler:
-            feedback: Kepler 186f is a super Earth exoplanet that orbits a M-type star Kepler 186.
-          Cancri:
-            feedback: Cancri is a super Earth that orbits an ultra-cool dwarf star.
-          Cancri_Cold:
-            feedback: Cancri is a super Earth that orbits an ultra-cool dwarf star.
-          BrownDwarf:
-            feedback: Brown Dwarf CWW 89Ab is a "failed star". It is most like a gas giant.
-      - prompt: tidally, locked, lava, cold, hot, temperature
-        worlds:
-          Cancri:
-            feedback: Cancri is tidally locked. This side is always facing the star and the heat can melt rocks.
-          Cancri_Cold:
-            feedback: Cancri is tidally locked. This side is always facing away from the star and creates a solid area to explore.
-      - prompt: sky, cloud
-        worlds:
-          Cancri_Cold:
-            feedback: On Cancri's cold side the atmosphere is cold enough to freeze materials like silicon in the sky causing glowing clouds.
-      - prompt: water
-        worlds:
-          Trappist:
-            feedback: The water on Trappist is toxic because of the volcanic and bacterial impact of the geothermic composition which is similar to water in Yellowstone.
-      - prompt: red, color
-        worlds:
-          Kepler:
-            feedback: The plants are red on Kepler because of the different atmospheric composition that filters out certain ranges of light.
-      - prompt: atmosphere
-        worlds:
-          Trappist:
-            feedback: The atmosphere composition in the air and water on Trappist is different from Earth, try measuring them using science tools either inside or outside a pond.
-          Kepler:
-            feedback: The atmosphere composition on Kepler is different than on Earth. It filters oout certain lights which cause the plants to grow in a red color, try measuring it with science tools.
-          BrownDwarf:
-            feedback: The carbon to oxygen ratio is crucial to determine whether this is a gas giant or Brown Dwarf.
-      - prompt: gravity, atmosphere, temperature, pressure, radius
-        worlds:
-          Gliese:
-            feedback: This concept is different on Gliese 436b, try using the science tools for this concept and think about how this could effect the surroundings.
-      - prompt: default
-        worlds:
-          ALL:
-            feedback: Hmm, I am not sure about this. You should ask an instructor if this is an important feature.
-
-
+database: true
+agent-worlds: None
 
 worlds:
   RocketLaunch:
@@ -194,55 +40,55 @@ worlds:
     top_left_coordinate_x: -325
     top_left_coordinate_z: -304
 
-  ColderSun_HabitableStrip:
+  ColderStrip:
     display_name: Colder Sun (Habitable Strip)
     pixel_to_block_ratio: 2
     top_left_coordinate_x: -227
     top_left_coordinate_z: -256
 
-  ColderSun_Cold:
+  ColderCold:
     display_name: Colder Sun (Cold)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -219
     top_left_coordinate_z: -137
 
-  ColderSun_Hot:
+  ColderHot:
     display_name: Colder Sun (Hot)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -302
     top_left_coordinate_z: -215
 
-  TiltedEarth_Frozen:
+  TiltedFrozen:
     display_name: Tilted Earth (Frozen)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -330
     top_left_coordinate_z: -200
 
-  TiltedEarth_JungleIsland:
+  TiltedWarm:
     display_name: Tilted Earth (Jungle)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -301
     top_left_coordinate_z: -169
 
-  TiltedEarth_Melting:
+  TiltedMelting:
     display_name: Tilted Earth (Melting)
     pixel_to_block_ratio: 2
     top_left_coordinate_x: -395
     top_left_coordinate_z: -394
 
-  Mynoa_close:
+  MynoaClose:
     display_name: Mynoa (Close)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: 1218
     top_left_coordinate_z: 786
 
-  Mynoa_half:
+  MynoaHalf:
     display_name: Mynoa (Half)
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -2480
     top_left_coordinate_z: 495
 
-  Mynoa_far:
+  MynoaFar:
     display_name: Mynoa (Far)
     pixel_to_block_ratio: 2
     top_left_coordinate_x: -81
@@ -254,7 +100,7 @@ worlds:
     top_left_coordinate_x: -21
     top_left_coordinate_z: -28
 
-  Cancri_Cold:
+  CancriCold:
     display_name: Cancri Cold
     pixel_to_block_ratio: 4
     top_left_coordinate_x: -100

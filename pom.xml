@@ -7,7 +7,7 @@
     <!-- Group-ID, artifact ID and version of the project. You can modify these as you want -->
     <groupId>edu.whimc</groupId>
     <artifactId>WHIMC-StudentFeedback</artifactId>
-    <version>0.0.0</version>
+    <version>1.0.0</version>
     <name>WHIMC Student Feedback</name>
     <description>Gives feedback based on student in-game actions</description>
 
@@ -59,14 +59,6 @@
 
         <dependency>
             <artifactId>edu.whimc</artifactId>
-            <groupId>WHIMC-OverworldAgent</groupId>
-            <scope>system</scope>
-            <version>0.0.0</version>
-            <systemPath>${basedir}/lib/WHIMC-OverworldAgent-0.0.0.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <artifactId>edu.whimc</artifactId>
             <groupId>WHIMC-Observations</groupId>
             <scope>system</scope>
             <version>2.5.0</version>
@@ -80,7 +72,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <build>
-        <finalName>${project.artifactId}</finalName>
+        <finalName>${project.artifactId}-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

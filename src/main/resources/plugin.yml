@@ -5,7 +5,7 @@ author: Sam Hum
 api-version: 1.13
 main: edu.whimc.feedback.StudentFeedback
 softdepend: [ProtocolLib]
-depende: [WHIMC-Observations, WHIMC-OverworldAgent]
+depend: [WHIMC-Observations, WHIMC-OverworldAgent]
 commands:
   progress:
     description: Gives feedback on student progress during session
